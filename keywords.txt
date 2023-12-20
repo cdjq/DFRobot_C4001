@@ -1,0 +1,29 @@
+#######################################
+# Syntax Coloring DFRobot_RS20XU
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DFRobot_RS20XU_I2C	KEYWORD1
+DFRobot_RS20XU_UART	KEYWORD1
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+motionDetection	KEYWORD2
+getVersion	KEYWORD2
+getStatus	KEYWORD2
+
+eStartSensor	KEYWORD2
+eResetSensor	KEYWORD2
+eStopSensor KEYWORD2
+
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+DEVICE_ADDR	LITERAL1
