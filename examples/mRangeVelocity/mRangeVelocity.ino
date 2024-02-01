@@ -11,7 +11,7 @@
 
 #include "DFRobot_RS20XU.h"
 
-#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
+//#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
 
 #ifdef  I2C_COMMUNICATION
   DFRobot_RS20XU_I2C radar(&Wire ,DEVICE_ADDR_0);
@@ -26,11 +26,11 @@
 /* Baud rate cannot be changed */
   #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
     SoftwareSerial mySerial(4, 5);
-    DFRobot_RS20XU_UART radar(&mySerial ,57600);
+    DFRobot_RS20XU_UART radar(&mySerial ,115200);
   #elif defined(ESP32)
-    DFRobot_RS20XU_UART radar(&Serial1 ,57600 ,/*rx*/D2 ,/*tx*/D3);
+    DFRobot_RS20XU_UART radar(&Serial1 ,115200 ,/*rx*/D2 ,/*tx*/D3);
   #else
-    DFRobot_RS20XU_UART radar(&Serial1 ,57600);
+    DFRobot_RS20XU_UART radar(&Serial1 ,115200);
   #endif
 #endif
 
@@ -61,18 +61,20 @@ void setup()
   Serial.print("init status = ");
   Serial.println(data.initStatus);
   Serial.println();
+
   /*
-   * 检测范围最小距离，单位cm，范围0.0~25m（0~2500），不超过max，否则工作不正常
-   * 检测范围最大距离，单位cm，范围0.0~25m（0~2500）
+   * 检测范围最小距离，单位cm，范围（0~2500），不超过max，否则工作不正常
+   * 检测范围最大距离，单位cm，范围（0~2500）
    * 目标检测阈值，无量纲单位0.1，范围0~6553.5（0~65535）
    */
-  radar.setDetectThres(0, 1000, 0);
+  if(radar.setDetectThres(11, 1200, 11)){
+    Serial.println("set detect threshold successfully");
+  }
+
+  // 设置微动检测
   radar.setFrettingDetection(eON);
-  // 保存配置
-  radar.setSensor(eSaveParams);
-
+  
   // 获取配置
-
   Serial.print("min range = ");
   Serial.println(radar.getTMinRange());
   Serial.print("max range = ");
@@ -82,21 +84,20 @@ void setup()
 
   Serial.print("fretting detection = ");
   Serial.println(radar.getFrettingDetection());
-  
-  // 开始测量
-  radar.setSensor(eStartSen);
-
 }
 
 void loop()
 {
   Serial.print("target number = ");
-  Serial.println(radar.getTargetNumber());
+  Serial.println(radar.getTargetNumber());   // must exist
   Serial.print("target Speed  = ");
-  Serial.println(radar.getTargetSpeed());
+  Serial.print(radar.getTargetSpeed());
+  Serial.println(" cm/s");
+
   Serial.print("target range  = ");
-  Serial.println(radar.getTargetRange());
+  Serial.print(radar.getTargetRange());
+  Serial.println(" cm");
+
   Serial.print("target energy  = ");
   Serial.println(radar.getTargetEnergy());
-  delay(1000);
 }

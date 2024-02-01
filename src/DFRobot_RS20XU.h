@@ -18,8 +18,10 @@
 #include "SoftwareSerial.h"
 #else
 #include "HardwareSerial.h"
+
 #endif
 
+#define MAX_BUFFER 5
 typedef struct{
   uint8_t workStatus;
   uint8_t workMode;
@@ -27,14 +29,31 @@ typedef struct{
 }sSensorStatus_t;
 
 
-#define MAX_BUFFER 10
-
 typedef struct{
   uint8_t  number;
-  uint16_t speed;
-  uint16_t range;
-  uint16_t energy;
+  int16_t speed;
+  int16_t range;
+  uint32_t energy;
 }sPrivateData_t;
+
+typedef struct{
+  bool status;
+  float response1;
+  float response2;
+  float response3;
+}sResponseData_t;
+
+typedef struct{
+  uint8_t pwm1;
+  uint8_t pwm2;
+  uint8_t timer;
+}sPwmData_t;
+
+typedef struct{
+  uint8_t exist;
+  sSensorStatus_t sta;
+  sPrivateData_t target;
+}sAllData_t;
 
 typedef enum{
   eExitMode  = 0x00,
@@ -59,7 +78,7 @@ class DFRobot_RS20XU{
 public:
 #define DEVICE_ADDR_0   0x2B
 #define DEVICE_ADDR_1   0x2A
-#define TIME_OUT        200     ///< time out
+#define TIME_OUT        150     ///< time out
 #define I2C_FLAG        1
 #define UART_FLAG       2
 
@@ -96,6 +115,16 @@ public:
 #define REG_T_MAX_RANGE_H       0x25
 #define REG_MICRO_MOTION        0x26
 
+
+  #define START_SENSOR    "sensorStart"
+  #define STOP_SENSOR     "sensorStop"
+  #define SAVE_CONFIG     "saveConfig"
+  #define RECOVER_SENSOR  "resetCfg"        ///> factory data reset
+  #define RESET_SENSOR    "resetSystem"     ///> RESET_SENSOR
+  #define SPEED_MODE      "setRunApp 1"
+  #define EXIST_MODE      "setRunApp 0"
+
+
   DFRobot_RS20XU();
   ~DFRobot_RS20XU();
   uint8_t  uartI2CFlag = 0;
@@ -120,16 +149,15 @@ public:
    */
   void setSensor(eSetMode_t mode);
   
-
   /**
-   * @brief Set the Trig Delay object
-   *        触发延时，单位0.01s，范围0~2s（0~200）
-   * @param time 
+   * @brief Set the Delay object
    * 
+   * @param trig 触发延时，单位0.01s，范围0~2s（0~200）
+   * @param keep 维持检测超时，单位0.5s，范围2~1500秒（4~3000）
    * @return true 
    * @return false 
    */
-  bool setTrigDelay(uint8_t time);
+  bool setDelay(uint8_t trig , uint16_t keep);
 
   /**
    * @brief Get the Trig Delay object
@@ -137,15 +165,6 @@ public:
    * @return uint8_t 
    */
   uint8_t getTrigDelay(void);
-
-  /**s
-   * @brief 设置检测超时,停止多少秒算作物体不运动
-   *        维持检测超时，单位0.5s，范围2~1500秒（4~3000）
-   * @param time 
-   * @return true 
-   * @return false 
-   */
-  bool setKeepTimerout(uint16_t time);
 
   /**
    * @brief 获取物体持续超时时间
@@ -185,7 +204,7 @@ public:
    * @return true 
    * @return false 
    */
-  bool setDetectionRange(uint16_t min, uint16_t max, uint16_t trig);
+  bool setDetectionRange(uint16_t min, uint16_t max);
 
   /**
    * @brief Set the Trig Sensitivity object
@@ -236,19 +255,132 @@ public:
   sSensorStatus_t getStatus(void);
 
 
+  /**
+   * @brief Set the Io Polaity object
+   * 
+   * @param value
+   *        0：有目标时输出低电平，无目标时输出高电平
+            1：有目标时输出高电平，无目标时输出低电平（默认状态）
+   * @return true 
+   * @return false 
+   */
+  bool setIoPolaity(uint8_t value);
+
+  /**
+   * @brief Get the Io Polaity object
+   *
+   * @return uint8_t 配置的I/O 口检测到目标后，引脚输出的信号电平
+   */
+  uint8_t getIoPolaity(void);
+
+
+  /**
+   * @brief Set the Pwm object
+   * 
+   * @param pwm1 
+   *        未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param pwm2 
+   *        检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param timer 
+   *        从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
+   *        如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   * @return true 
+   * @return false 
+   */
+  bool setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer);
+
+
+  /**
+   * @brief Get the Pwm object
+   * 
+   * @return sPwmData_t 
+   * @retval pwm1  未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
+   * @retval pwm2  检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
+   * @retval timer  从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
+   *         如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   */
+   
+  sPwmData_t getPwm(void);
+
+  /**
+   * @brief Set the Sensor Mode object
+   * 
+   * @param mode 
+   * @return true 
+   * @return false 
+   */
   bool setSensorMode(eMode_t mode);
 
+  /**
+   * @brief Get the Target Number object
+   * 
+   * @return uint8_t 
+   */
   uint8_t getTargetNumber(void);
-  uint16_t getTargetSpeed(void);
-  uint16_t getTargetRange(void);
-  uint16_t getTargetEnergy(void);
+  /**
+   * @brief Get the Target Speed object
+   * 
+   * @return int16_t 
+   */
+  int16_t getTargetSpeed(void);
+  /**
+   * @brief Get the Target Range object
+   * 
+   * @return int16_t 
+   */
+  int16_t getTargetRange(void);
+  /**
+   * @brief Get the Target Energy object
+   * 
+   * @return int16_t 
+   */
+  uint32_t getTargetEnergy(void);
+  /**
+   * @brief Set the Detect Thres object
+   * 
+   * @param min 
+   * @param max 
+   * @param thres 
+   * @return true 
+   * @return false 
+   */
   bool setDetectThres(uint16_t min, uint16_t max, uint16_t thres);
+
+  /**
+   * @brief 
+   * 
+   * @return uint16_t 
+   */
   uint16_t getTMinRange(void);
+  /**
+   * @brief 
+   * 
+   * @return uint16_t 
+   */
   uint16_t getTMaxRange(void);
+  /**
+   * @brief Get the Thres Range object
+   * 
+   * @return uint16_t 
+   */
   uint16_t getThresRange(void);
+  /**
+   * @brief Set the Fretting Detection object
+   * 
+   * @param sta 
+   */
   void setFrettingDetection(eSwitch_t sta);
+  /**
+   * @brief Get the Fretting Detection object
+   * 
+   * @return eSwitch_t 
+   */
   eSwitch_t getFrettingDetection(void);
 
+  sResponseData_t wRCMD(String cmd1, uint8_t count);
+  void writeCMD(String cmd1 , String cmd2, uint8_t count);
+  sAllData_t anaysisData(uint8_t * data, uint8_t len);
+  sResponseData_t anaysisResponse(uint8_t *data, uint8_t len ,uint8_t count);
 private:
   uint8_t  _addr;
   uint8_t  _M_Flag = 0;
@@ -273,9 +405,9 @@ private:
 class DFRobot_RS20XU_UART:public DFRobot_RS20XU{
 public:
 #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
-  DFRobot_RS20XU_UART(SoftwareSerial *sSerial, uint16_t Baud);
+  DFRobot_RS20XU_UART(SoftwareSerial *sSerial, uint32_t Baud);
 #else
-  DFRobot_RS20XU_UART(HardwareSerial *hSerial, uint16_t Baud ,uint8_t rxpin = 0, uint8_t txpin = 0);
+  DFRobot_RS20XU_UART(HardwareSerial *hSerial, uint32_t Baud ,uint8_t rxpin = 0, uint8_t txpin = 0);
 #endif
 
   bool begin(void);

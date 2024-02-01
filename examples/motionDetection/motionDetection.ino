@@ -11,7 +11,7 @@
 
 #include "DFRobot_RS20XU.h"
 
-#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
+//#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
 
 #ifdef  I2C_COMMUNICATION
   DFRobot_RS20XU_I2C radar(&Wire ,DEVICE_ADDR_0);
@@ -26,11 +26,11 @@
 /* Baud rate cannot be changed */
   #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
     SoftwareSerial mySerial(4, 5);
-    DFRobot_RS20XU_UART radar(&mySerial ,57600);
+    DFRobot_RS20XU_UART radar(&mySerial ,115200);
   #elif defined(ESP32)
-    DFRobot_RS20XU_UART radar(&Serial1 ,57600 ,/*rx*/D2 ,/*tx*/D3);
+    DFRobot_RS20XU_UART radar(&Serial1 ,115200 ,/*rx*/D2 ,/*tx*/D3);
   #else
-    DFRobot_RS20XU_UART radar(&Serial1 ,57600);
+    DFRobot_RS20XU_UART radar(&Serial1 ,115200);
   #endif
 #endif
 
@@ -62,14 +62,11 @@ void setup()
   Serial.println(data.initStatus);
   Serial.println();
 
-  
-
   /*
-   * @param min 检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过 max，否则功能不正常。
-   * @param max 检测范围最大距离，单位cm，范围2.4~20m（240~2000）
-   * @param trig 触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
+   * @param min 检测范围最小距离，单位cm，范围（30~2000），不超过 max，否则功能不正常。
+   * @param max 检测范围最大距离，单位cm，范围（240~2000）
    */
-  if(radar.setDetectionRange(50, 1000, 240)){
+  if(radar.setDetectionRange(50, 1000)){
     Serial.println("set detection range successfully!");
   }
   // set trigger sensitivity 0 - 9
@@ -78,20 +75,38 @@ void setup()
   }
 
   // set keep sensitivity 0 - 9
-  if(radar.setKeepSensitivity(7)){
+  if(radar.setKeepSensitivity(2)){
     Serial.println("set keep sensitivity successfully!");
   }
-  // 触发延时，单位0.01s，范围0~2s（0~200）
-  if(radar.setTrigDelay(10)){
-    Serial.println("set trigger dalay successfully!");
+  /*
+   * 触发延时，单位10ms，范围（0~200）
+   * 维持检测超时，单位500ms，范围（4~3000）
+   */
+  if(radar.setDelay(/*trig*/24, /*keep*/44)){
+    Serial.println("set delay successfully!");
   }
-  // 维持检测超时，单位0.5s，范围2~1500秒（4~3000）
-  if(radar.setKeepTimerout(4)){
-    Serial.println("set trigger dalay successfully!");
+  
+  /*
+   *        未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param pwm2 
+   *        检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param timer 
+   *        从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
+   *        如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   */
+  if(radar.setPwm(10, 10, 10)){
+    Serial.println("set pwm period successfully!");
   }
 
-  // 保存参数
-  radar.setSensor(eSaveParams);
+  /*
+   * 设置pwm 极性 
+   *  0：有目标时输出低电平，无目标时输出高电平
+   *  1：有目标时输出高电平，无目标时输出低电平（默认状态）
+   */
+  if(radar.setIoPolaity(1)){
+    Serial.println("set Io Polaity successfully!");
+  }
+
 
   // 获取配置
   Serial.print("trig sensitivity = ");
@@ -103,8 +118,6 @@ void setup()
   Serial.println(radar.getMinRange());
   Serial.print("max range = ");
   Serial.println(radar.getMaxRange());
-  Serial.print("trigger range = ");
-  Serial.println(radar.getTrigRange());
 
   Serial.print("keep time = ");
   Serial.println(radar.getKeepTimerout());
@@ -112,9 +125,17 @@ void setup()
   Serial.print("trig delay = ");
   Serial.println(radar.getTrigDelay());
 
-  // 开始测量
-  radar.setSensor(eStartSen);
+  Serial.print("polaity = ");
+  Serial.println(radar.getIoPolaity());
 
+  sPwmData_t pwmData;
+  pwmData = radar.getPwm();
+  Serial.print("pwm1 = ");
+  Serial.println(pwmData.pwm1);
+  Serial.print("pwm2 = ");
+  Serial.println(pwmData.pwm2);
+  Serial.print("pwm timer = ");
+  Serial.println(pwmData.timer);
 }
 
 void loop()
@@ -124,5 +145,5 @@ void loop()
     Serial.println("exit motion");
     Serial.println();
   }
-  delay(1000);
+  delay(100);
 }
