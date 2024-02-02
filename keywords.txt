@@ -1,29 +1,59 @@
 #######################################
-# Syntax Coloring DFRobot_RS20XU
+# Syntax Coloring DFRobot_C4001
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-DFRobot_RS20XU_I2C	KEYWORD1
-DFRobot_RS20XU_UART	KEYWORD1
+DFRobot_C4001_I2C	KEYWORD1
+DFRobot_C4001_UART	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 motionDetection	KEYWORD2
-getVersion	KEYWORD2
-getStatus	KEYWORD2
+setSensor	KEYWORD2
+setDelay	KEYWORD2
 
-eStartSensor	KEYWORD2
+getTrigDelay	KEYWORD2
 eResetSensor	KEYWORD2
 eStopSensor KEYWORD2
 
+getKeepTimerout	KEYWORD2
+getTrigRange	KEYWORD2
+getMaxRange	KEYWORD2
+getMinRange	KEYWORD2
+setDetectionRange	KEYWORD2
+setTrigSensitivity	KEYWORD2
+setKeepSensitivity	KEYWORD2
+getTrigSensitivity	KEYWORD2
+getKeepSensitivity	KEYWORD2
+getStatus	KEYWORD2
+setIoPolaity	KEYWORD2
+getIoPolaity	KEYWORD2
+setPwm	KEYWORD2
+getPwm	KEYWORD2
+setSensorMode	KEYWORD2
+getTargetNumber	KEYWORD2
+getTargetSpeed	KEYWORD2
+getTargetRange	KEYWORD2
+getTargetEnergy	KEYWORD2
+setDetectThres	KEYWORD2
+getTMinRange	KEYWORD2
+getTMaxRange	KEYWORD2
+getThresRange	KEYWORD2
+setFrettingDetection	KEYWORD2
+getFrettingDetection	KEYWORD2
+wRCMD	KEYWORD2
+anaysisResponse	KEYWORD2
+writeCMD	KEYWORD2
+anaysisData	KEYWORD2
 
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-DEVICE_ADDR	LITERAL1
+DEVICE_ADDR_0	LITERAL1
+DEVICE_ADDR_1	LITERAL1

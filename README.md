@@ -1,16 +1,13 @@
-# DFRobot_RS20XU
+# DFRobot_C4001
 - [中文版](./README_CN.md)
 
-Global Navigation Satellite Systems (GNSS) provide critical timing and positioning functions for device operations.
-This Gravity: GNSS positioning module from DFRobot supports both single and multiple systems positioning. It is capable of quick delivery of position data like longitude, latitude, altitude and time. Compared with traditional single GPS positioning, the multi-system combination embraces higher precision and faster speed thanks to the increased number of visible and available satellites, which ensures stable and accurate performance even in complex urban environments.
-
-With I2C and UART data outputs, the GNSS positioning module works well with main-controllers like Arduino, ESP32, and Raspberry Pi. It is applicable to outdoor positioning scenarios such as vehicle navigation, handheld positioning tracker, item tracking and weather station.
+Determine whether the human body exists, and its anti-interference ability is relatively strong, and it is not easy to be affected by factors such as temperature changes, environmental light changes and environmental noise. Whether the human body is sitting, sleeping or moving, the sensor can quickly and sensitively detect its presence.
 
 ![效果图](resources/images/TEL0157.jpg)
 
 ## Product Link(https://www.dfrobot.com/product-2651.html)
 
-    SKU：TEL0157
+    SKU：SEN0609 SEN0610
 
 ## Table of Contents
 
@@ -23,163 +20,264 @@ With I2C and UART data outputs, the GNSS positioning module works well with main
 
 ## Summary
 
-Provide an Arduino library for the GNSS module with the following features:
-Retrieval of GNSS data
-Retrieval of raw GNSS data.
+Provides an Arduino library that has the following features:
+  Get whether the human body exists
+  Get some state of motion of the object
 
 ## Installation
 There are two methods for using this library:<br>
-1. Open Arduino IDE, search for "DFRobot_RS20XU" on the status bar in Tools ->Manager Libraries and install the library.<br>
+1. Open Arduino IDE, search for "DFRobot_C4001" on the status bar in Tools ->Manager Libraries and install the library.<br>
 2. Download the library file before use, paste it into \Arduino\libraries directory, then open the examples folder and run the demo in the folder.<br>
 
 ## Methods
 
 ```C++
-/**
- * @fn getUTC
- * @brief Get utc standard time
- * @return sTim_t type, represents the returned hour, minute and second
- * @retval sTim_t.hour hour
- * @retval sTim_t.minute minute
- * @retval sTim_t.second second
- */
-  sTim_t getUTC(void);
+  /**
+   * @brief motionDetection
+   *         运动检测
+   * @return true
+   * @return false
+   */
+  bool motionDetection(void);
 
-/**
- * @fn getDate
- * @brief Get the date like year, month and day
- * @return sTim_t type, represents the returned year, month and day
- * @retval sTim_t.year year
- * @retval sTim_t.month month
- * @retval sTim_t.day day
- */
-  sTim_t getDate(void);
+  /**
+   * @brief Set the Sensor object
+   * 
+   * @param mode
+   *   eStartSen        开始采集
+   *   eStopSen         停止采集
+   *   eResetSen        复位传感器
+   *   eRecoverSen      恢复默认设置
+   *   eSaveParams      保存配置
+   *   eChangeMode      切换模式
+   */
+  void setSensor(eSetMode_t mode);
+  
+  /**
+   * @brief Set the Delay object
+   * 
+   * @param trig 触发延时，单位0.01s，范围0~2s（0~200）
+   * @param keep 维持检测超时，单位0.5s，范围2~1500秒（4~3000）
+   * @return true 
+   * @return false 
+   */
+  bool setDelay(uint8_t trig , uint16_t keep);
 
-/**
- * @fn getLat
- * @brief Get latitude
- * @return sLonLat_t Type, represents the returned latitude 
- * @retval sLonLat_t.latDD   Latitude degree(0-90)
- * @retval sLonLat_t.latMM   Latitude  The first and second digits behind the decimal point 
- * @retval sLonLat_t.latMMMMM Latitude  The third and seventh digits behind the decimal point 
- * @retval sLonLat_t.latitude  Latitude value with 7 decimal digits 
- * @retval sLonLat_t.latDirection Direction of latitude 
- */
-  sLonLat_t getLat(void);
+  /**
+   * @brief Get the Trig Delay object
+   *        获取物体的触发延时
+   * @return uint8_t 
+   */
+  uint8_t getTrigDelay(void);
 
-/**
- * @fn getLon
- * @brief Get longitude 
- * @return sLonLat_t Type, represents the returned longitude 
- * @retval sLonLat_t.lonDDD  Longitude degree(0-90)
- * @retval sLonLat_t.lonMM   Longitude  The first and second digits behind the decimal point 
- * @retval sLonLat_t.lonMMMMM Longitude The third and seventh digits behind the decimal point 
- * @retval sLonLat_t.lonitude Longitude value with 7 decimal digits 
- * @retval sLonLat_t.lonDirection Direction of longitude 
- */
-  sLonLat_t getLon(void);
+  /**
+   * @brief 获取物体持续超时时间
+   * 
+   * @return  uint16_t 
+   */
+  uint16_t getKeepTimerout(void);
 
-/**
- * @fn getNumSatUsed
- * @brief Get the number of the used satellite used 
- * @return uint8_t type, represents the number of the used satellite
- */
-  uint8_t getNumSatUsed(void);
+  /**
+   * @brief Get the Trig Range object
+   *        获取触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
+   * @return uint16_t 
+   */
+  uint16_t getTrigRange(void);
 
-/**
- * @fn getAlt
- * @brief Get altitude 
- * @return double type, represents altitude 
- */
-  double getAlt(void);
+  /**
+   * @brief Get the Max Range object
+   *        获取检测范围最大距离，单位cm，范围2.4~20m（240~2000）
+   * @return  uint16_t 
+   */
+  uint16_t getMaxRange(void);
 
-/**
- * @fn getSog
- * @brief Get speed over ground 
- * @return speed Float data(unit: knot)
- */
-  double getSog(void);
+  /**
+   * @brief Get the Min Range object
+   *        获取检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
+   * @return uint16_t 
+   */
+  uint16_t getMinRange(void);
 
-/**
- * @fn getCog
- * @brief Get course over ground 
- * @return Float data(unit: degree) 
- */
-  double getCog(void);
+  /**
+   * @brief Set the Detection Range object
+   *        
+   * @param min 检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
+   * @param max 检测范围最大距离，单位cm，范围2.4~20m（240~2000）
+   * @param trig 触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
+   * @return true 
+   * @return false 
+   */
+  bool setDetectionRange(uint16_t min, uint16_t max);
 
-/**
- * @fn setGnss
- * @brief Set GNSS to be used
- * @param mode
- * @n   eGPS              use gps
- * @n   eBeiDou           use beidou
- * @n   eGPS_BeiDou       use gps + beidou
- * @n   eGLONASS          use glonass
- * @n   eGPS_GLONASS      use gps + glonass
- * @n   eBeiDou_GLONASS   use beidou +glonass
- * @n   eGPS_BeiDou_GLONASS use gps + beidou + glonass
- * @return NULL
- */
-  void setGnss(eGnssMode_t mode);
+  /**
+   * @brief Set the Trig Sensitivity object
+   *        设置触发灵敏度，0~9
+   * @param sensitivity 
+   * @return true 
+   * @return false 
+   */
+  bool setTrigSensitivity(uint8_t sensitivity);
 
-/**
- * @fn transATMode
- * @brief Get the used gnss mode
- * @return mode
- * @retval 1  gps
- * @retval 2  beidou
- * @retval 3  gps + beidou
- * @retval 4  glonass
- * @retval 5  gps + glonass
- * @retval 6  beidou +glonass
- * @retval 7  gps + beidou + glonass
- */
-  uint8_t transATMode(void);
+  /**
+   * @brief Set the Keep Sensitivity object
+   *        设置维持灵敏度，0~9
+   * @param sensitivity 
+   * @return true 
+   * @return false 
+   */
+  bool setKeepSensitivity(uint8_t sensitivity);
 
-/**
- * @fn getAllGnss
- * @brief Get GNSS data, call back and receive 
- * @return null
- */
-  void getAllGnss(void);
+  /**
+   * @brief Get the Trig Sensitivity object
+   *        获取触发灵敏度
+   * @return uint8_t 
+   */
+  uint8_t getTrigSensitivity(void);
 
-/**
- * @fn enablePower
- * @brief Enable gnss power
- * @return null
- */
-void enablePower(void);
+  /**
+   * @brief Get the Keep Sensitivity object
+   *        获取维持灵敏度
+   * @return uint8_t 
+   */
+  uint8_t getKeepSensitivity(void);
 
-/**
- * @fn disablePower
- * @brief Disable gnss power
- * @return null
- */
-void disablePower(void);
+  /**
+   * @brief Get the Status object
+   * 
+   * @return sSensorStatus_t 
+   *        workStatus
+   *          0 stop
+   *          1 start
+   *        workMode
+   *          0 为存在检测
+   *          1 为测速测距
+   *        initStatus
+   *          0 未初始化
+   *          1 初始化完成
+   */
+  sSensorStatus_t getStatus(void);
 
 
-/**
- * @fn setRgbOn
- * @brief Turn rgb on 
- * @return null
- */
-void setRgbOn(void);
+  /**
+   * @brief Set the Io Polaity object
+   * 
+   * @param value
+   *        0：有目标时输出低电平，无目标时输出高电平
+            1：有目标时输出高电平，无目标时输出低电平（默认状态）
+   * @return true 
+   * @return false 
+   */
+  bool setIoPolaity(uint8_t value);
 
-/**
- * @fn setRgbOn
- * @brief Turn rgb off
- * @return null
- */
-void setRgbOff(void);
+  /**
+   * @brief Get the Io Polaity object
+   *
+   * @return uint8_t 配置的I/O 口检测到目标后，引脚输出的信号电平
+   */
+  uint8_t getIoPolaity(void);
 
-/**
- * @fn setCallback
- * @brief Set callback function type 
- * @param  * call function name 
- * @return null
- */
-  void setCallback(void (*call)(char *, uint8_t));
 
+  /**
+   * @brief Set the Pwm object
+   * 
+   * @param pwm1 
+   *        未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param pwm2 
+   *        检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param timer 
+   *        从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
+   *        如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   * @return true 
+   * @return false 
+   */
+  bool setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer);
+
+
+  /**
+   * @brief Get the Pwm object
+   * 
+   * @return sPwmData_t 
+   * @retval pwm1  未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
+   * @retval pwm2  检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
+   * @retval timer  从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
+   *         如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   */
+  sPwmData_t getPwm(void);
+
+  /**
+   * @brief Set the Sensor Mode object
+   * 
+   * @param mode 
+   * @return true 
+   * @return false 
+   */
+  bool setSensorMode(eMode_t mode);
+
+  /**
+   * @brief Get the Target Number object
+   * 
+   * @return uint8_t 
+   */
+  uint8_t getTargetNumber(void);
+  /**
+   * @brief Get the Target Speed object
+   * 
+   * @return int16_t 
+   */
+  int16_t getTargetSpeed(void);
+  /**
+   * @brief Get the Target Range object
+   * 
+   * @return int16_t 
+   */
+  int16_t getTargetRange(void);
+  /**
+   * @brief Get the Target Energy object
+   * 
+   * @return int16_t 
+   */
+  uint32_t getTargetEnergy(void);
+  /**
+   * @brief Set the Detect Thres object
+   * 
+   * @param min 
+   * @param max 
+   * @param thres 
+   * @return true 
+   * @return false 
+   */
+  bool setDetectThres(uint16_t min, uint16_t max, uint16_t thres);
+
+  /**
+   * @brief 
+   * 
+   * @return uint16_t 
+   */
+  uint16_t getTMinRange(void);
+  /**
+   * @brief 
+   * 
+   * @return uint16_t 
+   */
+  uint16_t getTMaxRange(void);
+  /**
+   * @brief Get the Thres Range object
+   * 
+   * @return uint16_t 
+   */
+  uint16_t getThresRange(void);
+  /**
+   * @brief Set the Fretting Detection object
+   * 
+   * @param sta 
+   */
+  void setFrettingDetection(eSwitch_t sta);
+  /**
+   * @brief Get the Fretting Detection object
+   * 
+   * @return eSwitch_t 
+   */
+  eSwitch_t getFrettingDetection(void);
 ```
 
 ## Compatibility
@@ -197,9 +295,8 @@ Micro:bit          |      √       | nonsupport uart |             |
 
 ## History
 
-- 2022/04/02 - Version 0.0.1 released.
-- 2022/10/26 - Version 1.0.0 released.
+- 2024/02/02 - Version 0.1.0 released.
 
 ## Credits
 
-Written by ZhixinLiu(zhixin.liu@dfrobot.com), 2022. (Welcome to our website)
+Written by ZhixinLiu(zhixin.liu@dfrobot.com), 2024. (Welcome to our website)

@@ -1,19 +1,19 @@
 /*!
- * @file DFRobot_RS20XU.cpp
- * @brief Define the basic structure of the DFRobot_RS20XU class, the implementation of the basic methods
+ * @file DFRobot_C4001.cpp
+ * @brief Define the basic structure of the DFRobot_C4001 class, the implementation of the basic methods
  * @copyright	Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
  * @license The MIT License (MIT)
  * @author [ZhixinLiu](zhixin.liu@dfrobot.com)
  * @version V1.0
- * @date 2023-03-07
- * @url https://github.com/DFRobot/DFRobot_RS20XU
+ * @date 2024-02-02
+ * @url https://github.com/DFRobot/DFRobot_C4001
  */
-#include "DFRobot_RS20XU.h"
+#include "DFRobot_C4001.h"
 
-DFRobot_RS20XU::DFRobot_RS20XU(){}
-DFRobot_RS20XU::~DFRobot_RS20XU(){}
+DFRobot_C4001::DFRobot_C4001(){}
+DFRobot_C4001::~DFRobot_C4001(){}
 
-sSensorStatus_t DFRobot_RS20XU::getStatus(void)
+sSensorStatus_t DFRobot_C4001::getStatus(void)
 {
   sSensorStatus_t data;
   if(uartI2CFlag == I2C_FLAG){
@@ -42,7 +42,7 @@ sSensorStatus_t DFRobot_RS20XU::getStatus(void)
   return data;
 }
 
-bool DFRobot_RS20XU::motionDetection(void)
+bool DFRobot_C4001::motionDetection(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = 0;
@@ -68,7 +68,7 @@ bool DFRobot_RS20XU::motionDetection(void)
   }
 }
 
-void DFRobot_RS20XU::setSensor(eSetMode_t mode)
+void DFRobot_C4001::setSensor(eSetMode_t mode)
 {
   uint8_t temp = mode;
   if(uartI2CFlag == I2C_FLAG){
@@ -117,7 +117,7 @@ void DFRobot_RS20XU::setSensor(eSetMode_t mode)
   }
 }
 
-bool DFRobot_RS20XU::setSensorMode(eMode_t mode)
+bool DFRobot_C4001::setSensorMode(eMode_t mode)
 {
   if(uartI2CFlag == I2C_FLAG){
     sSensorStatus_t data;
@@ -150,7 +150,7 @@ bool DFRobot_RS20XU::setSensorMode(eMode_t mode)
   }
 }
 
-bool DFRobot_RS20XU::setTrigSensitivity(uint8_t sensitivity)
+bool DFRobot_C4001::setTrigSensitivity(uint8_t sensitivity)
 {
   uint8_t temp = sensitivity;
   if(sensitivity > 9){
@@ -168,7 +168,7 @@ bool DFRobot_RS20XU::setTrigSensitivity(uint8_t sensitivity)
   }
 }
 
-uint8_t DFRobot_RS20XU::getTrigSensitivity(void)
+uint8_t DFRobot_C4001::getTrigSensitivity(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = 0;
@@ -185,7 +185,7 @@ uint8_t DFRobot_RS20XU::getTrigSensitivity(void)
   }
 }
 
-bool DFRobot_RS20XU::setKeepSensitivity(uint8_t sensitivity)
+bool DFRobot_C4001::setKeepSensitivity(uint8_t sensitivity)
 {
   uint8_t temp = sensitivity;
   if(sensitivity > 9){
@@ -203,7 +203,7 @@ bool DFRobot_RS20XU::setKeepSensitivity(uint8_t sensitivity)
   }
 }
 
-uint8_t DFRobot_RS20XU::getKeepSensitivity(void)
+uint8_t DFRobot_C4001::getKeepSensitivity(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = 0;
@@ -220,7 +220,7 @@ uint8_t DFRobot_RS20XU::getKeepSensitivity(void)
   }
 }
 
-bool DFRobot_RS20XU::setDelay(uint8_t trig , uint16_t keep)
+bool DFRobot_C4001::setDelay(uint8_t trig , uint16_t keep)
 {
   if(trig > 200){
     return false;
@@ -246,7 +246,7 @@ bool DFRobot_RS20XU::setDelay(uint8_t trig , uint16_t keep)
   }
 }
 
-uint8_t DFRobot_RS20XU::getTrigDelay(void)
+uint8_t DFRobot_C4001::getTrigDelay(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = 0;
@@ -264,7 +264,7 @@ uint8_t DFRobot_RS20XU::getTrigDelay(void)
 }
 
 
-uint16_t DFRobot_RS20XU::getKeepTimerout(void)
+uint16_t DFRobot_C4001::getKeepTimerout(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[2] = {0};
@@ -281,7 +281,7 @@ uint16_t DFRobot_RS20XU::getKeepTimerout(void)
   }
 }
 
-bool DFRobot_RS20XU::setDetectionRange(uint16_t min, uint16_t max)
+bool DFRobot_C4001::setDetectionRange(uint16_t min, uint16_t max)
 {
   if(max < 240 || max > 2000){
     return false;
@@ -312,7 +312,7 @@ bool DFRobot_RS20XU::setDetectionRange(uint16_t min, uint16_t max)
   }
 }
 
-uint16_t DFRobot_RS20XU::getTrigRange(void)
+uint16_t DFRobot_C4001::getTrigRange(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[4] = {0};
@@ -329,7 +329,7 @@ uint16_t DFRobot_RS20XU::getTrigRange(void)
   }
 }
 
-uint16_t DFRobot_RS20XU::getMaxRange(void)
+uint16_t DFRobot_C4001::getMaxRange(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[4] = {0};
@@ -346,7 +346,7 @@ uint16_t DFRobot_RS20XU::getMaxRange(void)
   }
 }
 
-uint16_t DFRobot_RS20XU::getMinRange(void)
+uint16_t DFRobot_C4001::getMinRange(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[4] = {0};
@@ -363,7 +363,7 @@ uint16_t DFRobot_RS20XU::getMinRange(void)
   }
 }
 
-uint8_t DFRobot_RS20XU::getTargetNumber(void)
+uint8_t DFRobot_C4001::getTargetNumber(void)
 {
   uint8_t count = 0;
   uint8_t temp[10] = {0};
@@ -436,22 +436,22 @@ uint8_t DFRobot_RS20XU::getTargetNumber(void)
   }
 }
 
-int16_t DFRobot_RS20XU::getTargetSpeed(void)
+int16_t DFRobot_C4001::getTargetSpeed(void)
 {
   return _buffer.speed;
 }
 
-int16_t DFRobot_RS20XU::getTargetRange(void)
+int16_t DFRobot_C4001::getTargetRange(void)
 {
   return _buffer.range;
 }
 
-uint32_t DFRobot_RS20XU::getTargetEnergy(void)
+uint32_t DFRobot_C4001::getTargetEnergy(void)
 {
   return _buffer.energy;
 }
 
-bool DFRobot_RS20XU::setDetectThres(uint16_t min, uint16_t max, uint16_t thres)
+bool DFRobot_C4001::setDetectThres(uint16_t min, uint16_t max, uint16_t thres)
 {
   if(max > 2500){
     return false;
@@ -482,7 +482,7 @@ bool DFRobot_RS20XU::setDetectThres(uint16_t min, uint16_t max, uint16_t thres)
   }
 }
 
-bool DFRobot_RS20XU::setIoPolaity(uint8_t value)
+bool DFRobot_C4001::setIoPolaity(uint8_t value)
 {
   if(value > 1){
     return false;
@@ -497,7 +497,7 @@ bool DFRobot_RS20XU::setIoPolaity(uint8_t value)
   }
 }
 
-uint8_t DFRobot_RS20XU::getIoPolaity(void)
+uint8_t DFRobot_C4001::getIoPolaity(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     return 0;
@@ -513,7 +513,7 @@ uint8_t DFRobot_RS20XU::getIoPolaity(void)
 }
 
 
-bool DFRobot_RS20XU::setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer)
+bool DFRobot_C4001::setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer)
 {
   if(pwm1 > 100 || pwm2 > 100){
     return false;
@@ -532,7 +532,7 @@ bool DFRobot_RS20XU::setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer)
   }
 }
 
-sPwmData_t DFRobot_RS20XU::getPwm(void)
+sPwmData_t DFRobot_C4001::getPwm(void)
 {
   sPwmData_t pwmData;
   memset(&pwmData, 0, sizeof(sPwmData_t));
@@ -552,7 +552,7 @@ sPwmData_t DFRobot_RS20XU::getPwm(void)
 }
 
 
-uint16_t DFRobot_RS20XU::getTMinRange(void)
+uint16_t DFRobot_C4001::getTMinRange(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[4] = {0};
@@ -569,7 +569,7 @@ uint16_t DFRobot_RS20XU::getTMinRange(void)
   }
 }
 
-uint16_t DFRobot_RS20XU::getTMaxRange(void)
+uint16_t DFRobot_C4001::getTMaxRange(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[4] = {0};
@@ -586,7 +586,7 @@ uint16_t DFRobot_RS20XU::getTMaxRange(void)
   }
 }
 
-uint16_t DFRobot_RS20XU::getThresRange(void)
+uint16_t DFRobot_C4001::getThresRange(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp[4] = {0};
@@ -603,7 +603,7 @@ uint16_t DFRobot_RS20XU::getThresRange(void)
   }
 }
 
-void DFRobot_RS20XU::setFrettingDetection(eSwitch_t sta)
+void DFRobot_C4001::setFrettingDetection(eSwitch_t sta)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = sta;
@@ -616,7 +616,7 @@ void DFRobot_RS20XU::setFrettingDetection(eSwitch_t sta)
   }
 }
 
-eSwitch_t DFRobot_RS20XU::getFrettingDetection(void)
+eSwitch_t DFRobot_C4001::getFrettingDetection(void)
 {
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = 0;
@@ -633,7 +633,7 @@ eSwitch_t DFRobot_RS20XU::getFrettingDetection(void)
   }
 }
 
-sResponseData_t DFRobot_RS20XU::anaysisResponse(uint8_t *data, uint8_t len ,uint8_t count)
+sResponseData_t DFRobot_C4001::anaysisResponse(uint8_t *data, uint8_t len ,uint8_t count)
 {
   sResponseData_t responseData;
   uint8_t space[5] = {0};
@@ -672,7 +672,7 @@ sResponseData_t DFRobot_RS20XU::anaysisResponse(uint8_t *data, uint8_t len ,uint
   return responseData;
 }
 
-sAllData_t DFRobot_RS20XU::anaysisData(uint8_t * data, uint8_t len)
+sAllData_t DFRobot_C4001::anaysisData(uint8_t * data, uint8_t len)
 {
   sAllData_t allData;
   uint8_t location = 0;
@@ -725,7 +725,7 @@ sAllData_t DFRobot_RS20XU::anaysisData(uint8_t * data, uint8_t len)
 }
 
 
-sResponseData_t DFRobot_RS20XU::wRCMD(String cmd1, uint8_t count)
+sResponseData_t DFRobot_C4001::wRCMD(String cmd1, uint8_t count)
 {
   uint8_t len = 0;
   uint8_t temp[100] = {0};
@@ -742,7 +742,7 @@ sResponseData_t DFRobot_RS20XU::wRCMD(String cmd1, uint8_t count)
   return responseData;
 }
 
-void DFRobot_RS20XU::writeCMD(String cmd1 , String cmd2, uint8_t count)
+void DFRobot_C4001::writeCMD(String cmd1 , String cmd2, uint8_t count)
 {
   writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
   delay(100);
@@ -760,14 +760,14 @@ void DFRobot_RS20XU::writeCMD(String cmd1 , String cmd2, uint8_t count)
   delay(100);
 }
 
-DFRobot_RS20XU_I2C::DFRobot_RS20XU_I2C(TwoWire *pWire, uint8_t addr)
+DFRobot_C4001_I2C::DFRobot_C4001_I2C(TwoWire *pWire, uint8_t addr)
 {
   _pWire = pWire;
   this->_I2C_addr = addr;
   uartI2CFlag = I2C_FLAG;
 }
 
-bool DFRobot_RS20XU_I2C::begin()
+bool DFRobot_C4001_I2C::begin()
 {
   _pWire->begin();
   _pWire->beginTransmission(_I2C_addr);
@@ -778,7 +778,7 @@ bool DFRobot_RS20XU_I2C::begin()
   }
 }
 
-void DFRobot_RS20XU_I2C::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
+void DFRobot_C4001_I2C::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
 {
   _pWire->beginTransmission(this->_I2C_addr);
   _pWire->write(reg);
@@ -786,7 +786,7 @@ void DFRobot_RS20XU_I2C::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
   _pWire->endTransmission();
 }
 
-int16_t DFRobot_RS20XU_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
+int16_t DFRobot_C4001_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
 {
   /* i2c get data */
   uint8_t i = 0;
@@ -806,7 +806,7 @@ int16_t DFRobot_RS20XU_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
 
 
 #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
-  DFRobot_RS20XU_UART::DFRobot_RS20XU_UART(SoftwareSerial *sSerial, uint32_t Baud)
+  DFRobot_C4001_UART::DFRobot_C4001_UART(SoftwareSerial *sSerial, uint32_t Baud)
   {
     this->_serial = sSerial;
     this->_baud = Baud;
@@ -814,7 +814,7 @@ int16_t DFRobot_RS20XU_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
     _serial->begin(this->_baud);
   }
 #else
-  DFRobot_RS20XU_UART::DFRobot_RS20XU_UART(HardwareSerial *hSerial, uint32_t Baud ,uint8_t txpin, uint8_t rxpin)
+  DFRobot_C4001_UART::DFRobot_C4001_UART(HardwareSerial *hSerial, uint32_t Baud ,uint8_t txpin, uint8_t rxpin)
   {
     this->_serial = hSerial;
     this->_baud = Baud;
@@ -824,7 +824,7 @@ int16_t DFRobot_RS20XU_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
   }
 #endif
 
-bool DFRobot_RS20XU_UART::begin()
+bool DFRobot_C4001_UART::begin()
 {
   #ifdef ESP32
     _serial->begin(this->_baud, SERIAL_8N1, _txpin, _rxpin);
@@ -838,7 +838,7 @@ bool DFRobot_RS20XU_UART::begin()
   return true;
 }
 
-void DFRobot_RS20XU_UART::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
+void DFRobot_C4001_UART::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
 {
   for(uint8_t i = 0; i < len; i++){
     _serial->write(data[i]);
@@ -846,7 +846,7 @@ void DFRobot_RS20XU_UART::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
   len = reg;
 }
 
-int16_t DFRobot_RS20XU_UART::readReg(uint8_t reg, uint8_t *data, uint8_t len)
+int16_t DFRobot_C4001_UART::readReg(uint8_t reg, uint8_t *data, uint8_t len)
 {
   uint16_t i = 0;
   uint32_t nowtime = millis();

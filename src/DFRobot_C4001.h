@@ -1,15 +1,15 @@
 /*!
- * @file DFRobot_RS20XU.h
- * @brief Define the basic structure of the DFRobot_RS20XU class, the implementation of the basic methods
+ * @file DFRobot_C4001.h
+ * @brief Define the basic structure of the DFRobot_C4001 class, the implementation of the basic methods
  * @copyright	Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
  * @license The MIT License (MIT)
  * @author [ZhixinLiu](zhixin.liu@dfrobot.com)
  * @version V1.0
- * @date 2023-03-07
- * @url https://github.com/DFRobot/DFRobot_RS20XU
+ * @date 2023-02-02
+ * @url https://github.com/DFRobot/DFRobot_C4001
  */
-#ifndef __DFROBOT_FACE_RECOGNITION_H__
-#define __DFROBOT_FACE_RECOGNITION_H__
+#ifndef __DFROBOT_C4001_H__
+#define __DFROBOT_C4001_H__
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -74,7 +74,7 @@ typedef enum{
   eChangeMode = 0x3B,
 }eSetMode_t;
 
-class DFRobot_RS20XU{
+class DFRobot_C4001{
 public:
 #define DEVICE_ADDR_0   0x2B
 #define DEVICE_ADDR_1   0x2A
@@ -125,8 +125,8 @@ public:
   #define EXIST_MODE      "setRunApp 0"
 
 
-  DFRobot_RS20XU();
-  ~DFRobot_RS20XU();
+  DFRobot_C4001();
+  ~DFRobot_C4001();
   uint8_t  uartI2CFlag = 0;
   /**
    * @brief motionDetection
@@ -179,7 +179,6 @@ public:
    * @return uint16_t 
    */
   uint16_t getTrigRange(void);
-
 
   /**
    * @brief Get the Max Range object
@@ -389,9 +388,9 @@ private:
   virtual int16_t readReg(uint8_t reg, uint8_t *data, uint8_t len) = 0;
 };
 
-class DFRobot_RS20XU_I2C:public DFRobot_RS20XU{
+class DFRobot_C4001_I2C:public DFRobot_C4001{
 public:
-  DFRobot_RS20XU_I2C(TwoWire *pWire=&Wire, uint8_t addr = DEVICE_ADDR_0);
+  DFRobot_C4001_I2C(TwoWire *pWire=&Wire, uint8_t addr = DEVICE_ADDR_0);
   bool begin(void);
 protected:
   virtual void writeReg(uint8_t reg, uint8_t *data, uint8_t len);
@@ -402,12 +401,12 @@ private:
 
 };
 
-class DFRobot_RS20XU_UART:public DFRobot_RS20XU{
+class DFRobot_C4001_UART:public DFRobot_C4001{
 public:
 #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
-  DFRobot_RS20XU_UART(SoftwareSerial *sSerial, uint32_t Baud);
+  DFRobot_C4001_UART(SoftwareSerial *sSerial, uint32_t Baud);
 #else
-  DFRobot_RS20XU_UART(HardwareSerial *hSerial, uint32_t Baud ,uint8_t rxpin = 0, uint8_t txpin = 0);
+  DFRobot_C4001_UART(HardwareSerial *hSerial, uint32_t Baud ,uint8_t rxpin = 0, uint8_t txpin = 0);
 #endif
 
   bool begin(void);

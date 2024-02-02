@@ -1,20 +1,20 @@
  /*!
   * @file  motionDetection.ino
-  * @brief  radar recognition demo
+  * @brief  radar Detect the presence of objects demo
   * @copyright Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
   * @license The MIT License (MIT)
   * @author ZhixinLiu(zhixin.liu@dfrobot.com)
   * @version V1.0
-  * @date 2023-12-07
-  * @url https://github.com/dfrobot/DFRobot_RS20XU
+  * @date 2024-02-02
+  * @url https://github.com/dfrobot/DFRobot_C4001
   */
 
-#include "DFRobot_RS20XU.h"
+#include "DFRobot_C4001.h"
 
 //#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
 
 #ifdef  I2C_COMMUNICATION
-  DFRobot_RS20XU_I2C radar(&Wire ,DEVICE_ADDR_0);
+  DFRobot_C4001_I2C radar(&Wire ,DEVICE_ADDR_0);
 #else
 /* ---------------------------------------------------------------------------------------------------------------------
  *    board   |             MCU                | Leonardo/Mega2560/M0 |    UNO    | ESP8266 | ESP32 |  microbit  |   m0  |
@@ -26,11 +26,11 @@
 /* Baud rate cannot be changed */
   #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
     SoftwareSerial mySerial(4, 5);
-    DFRobot_RS20XU_UART radar(&mySerial ,115200);
+    DFRobot_C4001_UART radar(&mySerial ,115200);
   #elif defined(ESP32)
-    DFRobot_RS20XU_UART radar(&Serial1 ,115200 ,/*rx*/D2 ,/*tx*/D3);
+    DFRobot_C4001_UART radar(&Serial1 ,115200 ,/*rx*/D2 ,/*tx*/D3);
   #else
-    DFRobot_RS20XU_UART radar(&Serial1 ,115200);
+    DFRobot_C4001_UART radar(&Serial1 ,115200);
   #endif
 #endif
 
