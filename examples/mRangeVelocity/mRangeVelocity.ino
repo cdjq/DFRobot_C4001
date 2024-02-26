@@ -11,7 +11,7 @@
 
 #include "DFRobot_C4001.h"
 
-//#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
+#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
 
 #ifdef  I2C_COMMUNICATION
   DFRobot_C4001_I2C radar(&Wire ,DEVICE_ADDR_0);
@@ -26,11 +26,11 @@
 /* Baud rate cannot be changed */
   #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
     SoftwareSerial mySerial(4, 5);
-    DFRobot_C4001_UART radar(&mySerial ,115200);
+    DFRobot_C4001_UART radar(&mySerial ,9600);
   #elif defined(ESP32)
-    DFRobot_C4001_UART radar(&Serial1 ,115200 ,/*rx*/D2 ,/*tx*/D3);
+    DFRobot_C4001_UART radar(&Serial1 ,9600 ,/*rx*/D2 ,/*tx*/D3);
   #else
-    DFRobot_C4001_UART radar(&Serial1 ,115200);
+    DFRobot_C4001_UART radar(&Serial1 ,9600);
   #endif
 #endif
 
@@ -52,35 +52,34 @@ void setup()
   Serial.print("work status  = ");
   Serial.println(data.workStatus);
 
-  //  0 为存在检测   1 为测速测距
+  //  0 is exist   1 speed
   Serial.print("work mode  = ");
   Serial.println(data.workMode);
 
-  //  0 未初始化   1 初始化完成
+  //  0 no init    1 init success
   Serial.print("init status = ");
   Serial.println(data.initStatus);
   Serial.println();
 
   /*
-   * 检测范围最小距离，单位cm，范围（0~2500），不超过max，否则工作不正常
-   * 检测范围最大距离，单位cm，范围（0~2500）
-   * 目标检测阈值，无量纲单位0.1，范围0~6553.5（0~65535）
+   * min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
+   * max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * thres Target detection threshold, dimensionless unit 0.1, range 0~6553.5 (0~65535)
    */
-  if(radar.setDetectThres(11, 1200, 11)){
+  if(radar.setDetectThres(/*min*/11, /*max*/1200, /*thres*/10)){
     Serial.println("set detect threshold successfully");
   }
 
-  // 设置微动检测
+  // set Fretting Detection
   radar.setFrettingDetection(eON);
   
-  // 获取配置
+  // get confige params
   Serial.print("min range = ");
   Serial.println(radar.getTMinRange());
   Serial.print("max range = ");
   Serial.println(radar.getTMaxRange());
   Serial.print("threshold range = ");
   Serial.println(radar.getThresRange());
-
   Serial.print("fretting detection = ");
   Serial.println(radar.getFrettingDetection());
 }
@@ -91,12 +90,13 @@ void loop()
   Serial.println(radar.getTargetNumber());   // must exist
   Serial.print("target Speed  = ");
   Serial.print(radar.getTargetSpeed());
-  Serial.println(" cm/s");
+  Serial.println(" m/s");
 
   Serial.print("target range  = ");
   Serial.print(radar.getTargetRange());
-  Serial.println(" cm");
+  Serial.println(" m");
 
   Serial.print("target energy  = ");
   Serial.println(radar.getTargetEnergy());
+  delay(100);
 }

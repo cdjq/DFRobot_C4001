@@ -31,8 +31,8 @@ typedef struct{
 
 typedef struct{
   uint8_t  number;
-  int16_t speed;
-  int16_t range;
+  float speed;
+  float range;
   uint32_t energy;
 }sPrivateData_t;
 
@@ -76,9 +76,9 @@ typedef enum{
 
 class DFRobot_C4001{
 public:
-#define DEVICE_ADDR_0   0x2B
-#define DEVICE_ADDR_1   0x2A
-#define TIME_OUT        150     ///< time out
+#define DEVICE_ADDR_0   0x2A
+#define DEVICE_ADDR_1   0x2B
+#define TIME_OUT        50     ///< time out
 #define I2C_FLAG        1
 #define UART_FLAG       2
 
@@ -321,19 +321,22 @@ public:
    * 
    * @return int16_t 
    */
-  int16_t getTargetSpeed(void);
+  float getTargetSpeed(void);
+
   /**
    * @brief Get the Target Range object
    * 
    * @return int16_t 
    */
-  int16_t getTargetRange(void);
+  float getTargetRange(void);
+
   /**
    * @brief Get the Target Energy object
    * 
    * @return int16_t 
    */
   uint32_t getTargetEnergy(void);
+  
   /**
    * @brief Set the Detect Thres object
    * 

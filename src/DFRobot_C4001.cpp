@@ -33,6 +33,9 @@ sSensorStatus_t DFRobot_C4001::getStatus(void)
     while(len == 0){
       delay(1000);
       len = readReg(0, temp, 100);
+      // for(uint8_t i = 0; i < len; i++) {
+      //   Serial.print((char)temp[i]);
+      // }
       allData = anaysisData(temp ,len);
     }
     data.workStatus = allData.sta.workStatus;
@@ -58,6 +61,9 @@ bool DFRobot_C4001::motionDetection(void)
     uint8_t temp[100] = {0};
     sAllData_t data;
     len = readReg(0, temp, 100);
+    // for(uint8_t i = 0; i < len; i++) {
+    //   Serial.print((char)temp[i]);
+    // }
     data = anaysisData(temp ,len);
     if(data.exist){
       old = (bool)status;
@@ -178,7 +184,7 @@ uint8_t DFRobot_C4001::getTrigSensitivity(void)
     sResponseData_t responseData;
     String data = "getSensitivity";
     responseData = wRCMD(data, (uint8_t)1);
-    if(responseData.status){
+    if(responseData.status){ 
       return responseData.response1;
     }
     return 0;
@@ -365,6 +371,7 @@ uint16_t DFRobot_C4001::getMinRange(void)
 
 uint8_t DFRobot_C4001::getTargetNumber(void)
 {
+  static uint8_t flash_number = 0;
   uint8_t count = 0;
   uint8_t temp[10] = {0};
   uint16_t bufferNumber[MAX_BUFFER] = {0};
@@ -372,31 +379,20 @@ uint8_t DFRobot_C4001::getTargetNumber(void)
   uint16_t bufferspeed[MAX_BUFFER]  = {0};
   uint16_t bufferenergy[MAX_BUFFER] = {0};
   if(uartI2CFlag == I2C_FLAG){
-    for(uint8_t i = 0; i < MAX_BUFFER; i++){
-      readReg(REG_RESULT_OBJ_MUN, temp, (uint8_t)7);
-      bufferNumber[i] = temp[0];
-      bufferRange[i]  = (uint16_t)(temp[1] | ((uint16_t)temp[2]) << 8);
-      bufferspeed[i]  = (uint16_t)(temp[3] | ((uint16_t)temp[4]) << 8);
-      bufferenergy[i] = (uint16_t)(temp[5] | ((uint16_t)temp[6]) << 8);
-      if(temp[0] == 1){
-        count++;
-      }
-      delay(100);
-    }
-    if(count < 2){
-      _buffer.number = 0;
-      _buffer.range  = 0;
-      _buffer.speed  = 0;
-      _buffer.energy = 0;
-    }else{
+
+    readReg(REG_RESULT_OBJ_MUN, temp, (uint8_t)7);
+    if(temp[0] == 1){
+      flash_number = 0;
       _buffer.number = 1;
-      for(uint8_t i = MAX_BUFFER; i > 0; i--){
-        if(bufferNumber[i] != 0){
-          _buffer.range  = bufferRange[i];
-          _buffer.speed  = bufferspeed[i];
-          _buffer.energy = bufferenergy[i];
-          break;
-        }
+      _buffer.range  = (float)( int16_t((uint16_t)(temp[1] | ((uint16_t)temp[2]) << 8))) / 1000.0;
+      _buffer.speed  = (float)( int16_t((uint16_t)(temp[3] | ((uint16_t)temp[4]) << 8))) / 1000.0;
+      _buffer.energy = (uint16_t)(temp[5] | ((uint16_t)temp[6]) << 8);
+    }else{
+      if(flash_number++ > 10){
+        _buffer.number = 0;
+        _buffer.range  = 0;
+        _buffer.speed  = 0;
+        _buffer.energy = 0;
       }
     }
     return _buffer.number;
@@ -404,44 +400,32 @@ uint8_t DFRobot_C4001::getTargetNumber(void)
     uint8_t len = 0;
     uint8_t temp[100] = {0};
     sAllData_t data;
-
-    for(uint8_t i = 0; i < MAX_BUFFER; i++){
-      len = readReg(0, temp, 100);
-      data = anaysisData(temp ,len);
-      bufferNumber[i] = data.target.number;
-      bufferRange[i]  = data.target.range;
-      bufferspeed[i]  = data.target.speed;
-      bufferenergy[i] = data.target.energy;
-      if(data.target.number == 1){
-        count++;
-      }
-    }
-    if(count < 2){
-      _buffer.number = 0;
-      _buffer.range  = 0;
-      _buffer.speed  = 0;
-      _buffer.energy = 0;
+    len = readReg(0, temp, 100);
+    data = anaysisData(temp ,len);
+    if(data.target.number != 0){
+      flash_number = 0;
+      _buffer.number = data.target.number;
+      _buffer.range  = data.target.range/1000.0;
+      _buffer.speed  = data.target.speed/1000.0;
+      _buffer.energy = data.target.energy;
     }else{
-      _buffer.number = 1;
-      for(uint8_t i = MAX_BUFFER; i > 0; i--){
-        if(bufferNumber[i] != 0){
-          _buffer.range  = bufferRange[i];
-          _buffer.speed  = bufferspeed[i];
-          _buffer.energy = bufferenergy[i];
-          break;
-        }
+      if(flash_number++ > 10){
+        _buffer.number = 0;
+        _buffer.range  = 0;
+        _buffer.speed  = 0;
+        _buffer.energy = 0;
       }
     }
     return data.target.number;
   }
 }
 
-int16_t DFRobot_C4001::getTargetSpeed(void)
+float DFRobot_C4001::getTargetSpeed(void)
 {
   return _buffer.speed;
 }
 
-int16_t DFRobot_C4001::getTargetRange(void)
+float DFRobot_C4001::getTargetRange(void)
 {
   return _buffer.range;
 }
@@ -707,7 +691,7 @@ sAllData_t DFRobot_C4001::anaysisData(uint8_t * data, uint8_t len)
     int index = 0; // 用于跟踪存储的部分数量
 
     // 使用strtok函数按逗号分隔字符串
-    token = strtok((data+location), ",");
+    token = strtok((char*)(data+location), ",");
     while (token != NULL) {
       parts[index] = token; // 将部分的指针存储在数组中
       if(index++ > 8){
@@ -853,8 +837,8 @@ int16_t DFRobot_C4001_UART::readReg(uint8_t reg, uint8_t *data, uint8_t len)
   while(millis() - nowtime < TIME_OUT){
     while(_serial->available() > 0){
       data[i++] = _serial->read();
-      if(i == len) return len;
     }
+    if(i >= len) return len;
   }
   len = reg;
   reg = len;

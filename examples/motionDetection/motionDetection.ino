@@ -26,11 +26,11 @@
 /* Baud rate cannot be changed */
   #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
     SoftwareSerial mySerial(4, 5);
-    DFRobot_C4001_UART radar(&mySerial ,115200);
+    DFRobot_C4001_UART radar(&mySerial ,9600);
   #elif defined(ESP32)
-    DFRobot_C4001_UART radar(&Serial1 ,115200 ,/*rx*/D2 ,/*tx*/D3);
+    DFRobot_C4001_UART radar(&Serial1 ,9600 ,/*rx*/D2 ,/*tx*/D3);
   #else
-    DFRobot_C4001_UART radar(&Serial1 ,115200);
+    DFRobot_C4001_UART radar(&Serial1 ,9600);
   #endif
 #endif
 
@@ -53,20 +53,20 @@ void setup()
   Serial.print("work status  = ");
   Serial.println(data.workStatus);
 
-  //  0 为存在检测   1 为测速测距
+  //  0 is exist   1 speed
   Serial.print("work mode  = ");
   Serial.println(data.workMode);
 
-  //  0 未初始化   1 初始化完成
+  //  0 no init    1 init success
   Serial.print("init status = ");
   Serial.println(data.initStatus);
   Serial.println();
 
   /*
-   * @param min 检测范围最小距离，单位cm，范围（30~2000），不超过 max，否则功能不正常。
-   * @param max 检测范围最大距离，单位cm，范围（240~2000）
+   * min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
+   * max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
    */
-  if(radar.setDetectionRange(50, 1000)){
+  if(radar.setDetectionRange(/*min*/50, /*max*/1000)){
     Serial.println("set detection range successfully!");
   }
   // set trigger sensitivity 0 - 9
@@ -79,36 +79,33 @@ void setup()
     Serial.println("set keep sensitivity successfully!");
   }
   /*
-   * 触发延时，单位10ms，范围（0~200）
-   * 维持检测超时，单位500ms，范围（4~3000）
+   * trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
    */
-  if(radar.setDelay(/*trig*/24, /*keep*/44)){
+  if(radar.setDelay(/*trig*/24, /*keep*/4)){
     Serial.println("set delay successfully!");
   }
   
   /*
-   *        未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
-   * @param pwm2 
-   *        检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
-   * @param timer 
-   *        从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
-   *        如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   * pwm1  When no target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * pwm2  After the target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * timer The value ranges from 0 to 255, corresponding to timer x 64ms
+   *        For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
    */
-  if(radar.setPwm(10, 10, 10)){
+  if(radar.setPwm(/*pwm1*/10, /*pwm2*/10, /*timer*/10)){
     Serial.println("set pwm period successfully!");
   }
 
   /*
-   * 设置pwm 极性 
-   *  0：有目标时输出低电平，无目标时输出高电平
-   *  1：有目标时输出高电平，无目标时输出低电平（默认状态）
+   * Set pwm polarity
+   * 0：Output low level when there is a target, output high level when there is no target
+   * 1: Output high level when there is a target, output low level when there is no target (default)
    */
   if(radar.setIoPolaity(1)){
     Serial.println("set Io Polaity successfully!");
   }
 
-
-  // 获取配置
+  // get confige params
   Serial.print("trig sensitivity = ");
   Serial.println(radar.getTrigSensitivity());
   Serial.print("keep sensitivity = ");
@@ -140,7 +137,7 @@ void setup()
 
 void loop()
 {
-  // 判断物体是否运动
+  // Determine whether the object is moving
   if(radar.motionDetection()){
     Serial.println("exit motion");
     Serial.println();
