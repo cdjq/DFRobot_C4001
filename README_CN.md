@@ -34,30 +34,32 @@
 
 ```C++
   /**
-   * @brief motionDetection
-   *         运动检测
+   * @fn motionDetection
+   * @brief motionDetection 运动检测
    * @return true
    * @return false
    */
   bool motionDetection(void);
 
   /**
+   * @fn setSensor
    * @brief Set the Sensor object
-   * 
    * @param mode
-   *   eStartSen        开始采集
-   *   eStopSen         停止采集
-   *   eResetSen        复位传感器
-   *   eRecoverSen      恢复默认设置
-   *   eSaveParams      保存配置
-   *   eChangeMode      切换模式
+   * @n  eStartSen        开始采集
+   * @n  eStopSen         停止采集
+   * @n  eResetSen        复位传感器
+   * @n  eRecoverSen      恢复默认设置
+   * @n  eSaveParams      保存配置
+   * @n  eChangeMode      切换模式
    */
   void setSensor(eSetMode_t mode);
   
   /**
-   * @brief Set the Delay object
-   * 
+   * @fn setDelay
+   * @brief 设置延时时间
    * @param trig 触发延时，单位0.01s，范围0~2s（0~200）
+   * @n     iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * @n     uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
    * @param keep 维持检测超时，单位0.5s，范围2~1500秒（4~3000）
    * @return true 
    * @return false 
@@ -65,217 +67,212 @@
   bool setDelay(uint8_t trig , uint16_t keep);
 
   /**
-   * @brief Get the Trig Delay object
-   *        获取物体的触发延时
+   * @fn getTrigDelay
+   * @brief 获取物体的触发延时
    * @return uint8_t 
    */
   uint8_t getTrigDelay(void);
 
   /**
+   * @fn getKeepTimerout
    * @brief 获取物体持续超时时间
-   * 
    * @return  uint16_t 
    */
   uint16_t getKeepTimerout(void);
 
   /**
-   * @brief Get the Trig Range object
-   *        获取触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
+   * @fn getTrigRange
+   * @brief 存在模式，获取触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
    * @return uint16_t 
    */
   uint16_t getTrigRange(void);
 
   /**
-   * @brief Get the Max Range object
-   *        获取检测范围最大距离，单位cm，范围2.4~20m（240~2000）
+   * @fn getMaxRange
+   * @brief 存在模式，获取检测范围最大距离，单位cm，范围2.4~20m（240~2000）
    * @return  uint16_t 
    */
   uint16_t getMaxRange(void);
 
   /**
-   * @brief Get the Min Range object
-   *        获取检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
+   * @fn getMinRange
+   * @brief 存在模式，获取检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
    * @return uint16_t 
    */
   uint16_t getMinRange(void);
 
   /**
-   * @brief Set the Detection Range object
-   *        
+   * @fn setDetectionRange
+   * @brief 设置检测范围
    * @param min 检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
    * @param max 检测范围最大距离，单位cm，范围2.4~20m（240~2000）
    * @param trig 触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setDetectionRange(uint16_t min, uint16_t max);
 
   /**
-   * @brief Set the Trig Sensitivity object
-   *        设置触发灵敏度，0~9
+   * @fn setTrigSensitivity
+   * @brief 设置触发灵敏度，0~9
    * @param sensitivity 
-   * @return true 
-   * @return false 
+   * @return true or false 
    */
   bool setTrigSensitivity(uint8_t sensitivity);
 
   /**
-   * @brief Set the Keep Sensitivity object
-   *        设置维持灵敏度，0~9
+   * @fn setKeepSensitivity
+   * @brief 设置维持灵敏度，0~9
    * @param sensitivity 
-   * @return true 
-   * @return false 
+   * @return true or false 
    */
   bool setKeepSensitivity(uint8_t sensitivity);
 
   /**
-   * @brief Get the Trig Sensitivity object
-   *        获取触发灵敏度
+   * @fn getTrigSensitivity
+   * @brief 获取触发灵敏度
    * @return uint8_t 
    */
   uint8_t getTrigSensitivity(void);
 
   /**
-   * @brief Get the Keep Sensitivity object
-   *        获取维持灵敏度
+   * @fn getKeepSensitivity
+   * @brief 获取维持灵敏度
    * @return uint8_t 
    */
   uint8_t getKeepSensitivity(void);
 
   /**
-   * @brief Get the Status object
-   * 
+   * @fn getStatus
+   * @brief 获取模块当前状态
    * @return sSensorStatus_t 
-   *        workStatus
-   *          0 stop
-   *          1 start
-   *        workMode
-   *          0 为存在检测
-   *          1 为测速测距
-   *        initStatus
-   *          0 未初始化
-   *          1 初始化完成
+   * @n     workStatus
+   * @n       0 stop
+   * @n       1 start
+   * @n     workMode
+   * @n       0 为存在检测
+   * @n       1 为测速测距
+   * @n     initStatus
+   * @n       0 未初始化
+   * @n       1 初始化完成
    */
   sSensorStatus_t getStatus(void);
 
-
   /**
-   * @brief Set the Io Polaity object
-   * 
+   * @fn setIoPolaity
+   * @brief 设置io口极性
    * @param value
-   *        0：有目标时输出低电平，无目标时输出高电平
-            1：有目标时输出高电平，无目标时输出低电平（默认状态）
-   * @return true 
-   * @return false 
+   * @n     0：有目标时输出低电平，无目标时输出高电平
+   * @n     1：有目标时输出高电平，无目标时输出低电平（默认状态）
+   * @return true or false 
    */
   bool setIoPolaity(uint8_t value);
 
   /**
-   * @brief Get the Io Polaity object
-   *
+   * @fn getIoPolaity
+   * @brief 获取io口极性状态
    * @return uint8_t 配置的I/O 口检测到目标后，引脚输出的信号电平
    */
   uint8_t getIoPolaity(void);
 
-
   /**
-   * @brief Set the Pwm object
-   * 
-   * @param pwm1 
-   *        未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
-   * @param pwm2 
-   *        检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
-   * @param timer 
-   *        从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
-   *        如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
-   * @return true 
-   * @return false 
+   * @fn setPwm
+   * @brief 设置 pwm 周期
+   * @param pwm1  未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param pwm2  检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
+   * @param timer  从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
+   * @n            如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   * @return true or false 
    */
   bool setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer);
 
-
   /**
-   * @brief Get the Pwm object
-   * 
+   * @fn getPwm
+   * @brief 获取pwm 周期
    * @return sPwmData_t 
    * @retval pwm1  未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
    * @retval pwm2  检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
    * @retval timer  从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
-   *         如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   * @n      如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
    */
   sPwmData_t getPwm(void);
 
   /**
-   * @brief Set the Sensor Mode object
-   * 
+   * @fn setSensorMode
+   * @brief 设置sensor 模式
    * @param mode 
-   * @return true 
-   * @return false 
+   * @return true or false 
    */
   bool setSensorMode(eMode_t mode);
 
   /**
-   * @brief Get the Target Number object
-   * 
+   * @fn getTargetNumber
+   * @brief 获取速度模式下的目标数量
    * @return uint8_t 
    */
   uint8_t getTargetNumber(void);
+
   /**
-   * @brief Get the Target Speed object
-   * 
-   * @return int16_t 
+   * @fn getTargetSpeed
+   * @brief 获取速度模式下的目标速度
+   * @return float 
    */
-  int16_t getTargetSpeed(void);
+  float getTargetSpeed(void);
+
   /**
-   * @brief Get the Target Range object
-   * 
-   * @return int16_t 
+   * @fn getTargetRange
+   * @brief 获取速度模式下目标范围
+   * @return float
    */
-  int16_t getTargetRange(void);
+  float getTargetRange(void);
+
   /**
-   * @brief Get the Target Energy object
-   * 
-   * @return int16_t 
+   * @fn getTargetEnergy
+   * @brief 获取速度模式下目标能量
+   * @return uint32_t 
    */
   uint32_t getTargetEnergy(void);
+
   /**
-   * @brief Set the Detect Thres object
-   * 
-   * @param min 
-   * @param max 
-   * @param thres 
-   * @return true 
-   * @return false 
+   * @fn setDetectThres
+   * @brief 设置检测的阈值
+   * @param min 检测距离最小距离，单位厘米，范围0.3~20m(30~2000)，不能超过max，否则功能异常。
+   * @param max 最大探测距离，单位厘米，范围2.4~20m (240~2000)
+   * @param thres 目标检测阈值，无量纲单位0.1，范围0~6553.5 (0~65535)
+   * @return true or false 
    */
   bool setDetectThres(uint16_t min, uint16_t max, uint16_t thres);
 
   /**
-   * @brief 
-   * 
+   * @fn getTMinRange
+   * @brief 运动模式，获取检测的最小范围
    * @return uint16_t 
    */
   uint16_t getTMinRange(void);
+
   /**
-   * @brief 
-   * 
+   * @fn getTMaxRange
+   * @brief 运动模式，获取检测的最大范围
    * @return uint16_t 
    */
   uint16_t getTMaxRange(void);
+
   /**
-   * @brief Get the Thres Range object
-   * 
+   * @fn getThresRange
+   * @brief 运动模式，获取阈值配置的范围
    * @return uint16_t 
    */
   uint16_t getThresRange(void);
+
   /**
-   * @brief Set the Fretting Detection object
-   * 
-   * @param sta 
+   * @fn setFrettingDetection
+   * @brief 设置微动检测
+   * @param sta 枚举类型
    */
   void setFrettingDetection(eSwitch_t sta);
+
   /**
-   * @brief Get the Fretting Detection object
-   * 
+   * @fn getFrettingDetection
+   * @brief 获取微动检测的配置状态
    * @return eSwitch_t 
    */
   eSwitch_t getFrettingDetection(void);
@@ -292,7 +289,6 @@ FireBeetle-ESP8266 |      √       |                 |             |
 FireBeetle-ESP32   |      √       |                 |             |
 FireBeetle-M0      |      √       |                 |             |
 Micro:bit          |      √       | nonsupport uart |             |
-
 
 ## 历史
 - 2024/02/26 - V1.0.0 版本

@@ -129,252 +129,246 @@ public:
   ~DFRobot_C4001();
   uint8_t  uartI2CFlag = 0;
   /**
-   * @brief motionDetection
-   *         运动检测
-   * @return true
-   * @return false
+   * @fn motionDetection
+   * @brief motion Detection
+   * @return true or false
    */
   bool motionDetection(void);
 
   /**
+   * @fn setSensor
    * @brief Set the Sensor object
-   * 
    * @param mode
-   *   eStartSen        开始采集
-   *   eStopSen         停止采集
-   *   eResetSen        复位传感器
-   *   eRecoverSen      恢复默认设置
-   *   eSaveParams      保存配置
-   *   eChangeMode      切换模式
+   * @n  eStartSen        start collect
+   * @n  eStopSen         stop collect
+   * @n  eResetSen        reset sensor
+   * @n  eRecoverSen      recover params
+   * @n  eSaveParams      save config
+   * @n  eChangeMode      chagne mode
    */
   void setSensor(eSetMode_t mode);
   
   /**
+   * @fn setDelay
    * @brief Set the Delay object
-   * 
-   * @param trig 触发延时，单位0.01s，范围0~2s（0~200）
-   * @param keep 维持检测超时，单位0.5s，范围2~1500秒（4~3000）
-   * @return true 
-   * @return false 
+   * @param trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * @n     iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * @n     uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
+   * @param keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
+   * @return true or false
    */
   bool setDelay(uint8_t trig , uint16_t keep);
 
   /**
+   * @fn getTrigDelay
    * @brief Get the Trig Delay object
-   *        获取物体的触发延时
    * @return uint8_t 
    */
   uint8_t getTrigDelay(void);
 
   /**
-   * @brief 获取物体持续超时时间
-   * 
+   * @fn getKeepTimerout
+   * @brief get keep timer out
    * @return  uint16_t 
    */
   uint16_t getKeepTimerout(void);
 
   /**
+   * @fn getTrigRange
    * @brief Get the Trig Range object
-   *        获取触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
+   * @n     The triggering distance, in cm, ranges from 2.4 to 20m (240 to 2000). 
+   * @n     The actual configuration range does not exceed the maximum and minimum detection distance.
    * @return uint16_t 
    */
   uint16_t getTrigRange(void);
 
   /**
+   * @fn getMaxRange
    * @brief Get the Max Range object
-   *        获取检测范围最大距离，单位cm，范围2.4~20m（240~2000）
    * @return  uint16_t 
    */
   uint16_t getMaxRange(void);
 
   /**
+   * @fn getMinRange
    * @brief Get the Min Range object
-   *        获取检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
    * @return uint16_t 
    */
   uint16_t getMinRange(void);
 
   /**
+   * @fn setDetectionRange
    * @brief Set the Detection Range object
-   *        
-   * @param min 检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
-   * @param max 检测范围最大距离，单位cm，范围2.4~20m（240~2000）
-   * @param trig 触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
-   * @return true 
-   * @return false 
+   * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
+   * @param max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * @param trig The trigger distance (unit: cm) ranges from 2.4 to 20m (240 to 2000). The actual configuration range does not exceed the maximum and minimum detection distance.
+   * @return true or false
    */
   bool setDetectionRange(uint16_t min, uint16_t max);
 
   /**
-   * @brief Set the Trig Sensitivity object
-   *        设置触发灵敏度，0~9
+   * @fn setTrigSensitivity
+   * @brief Set trigger sensitivity, 0~9
    * @param sensitivity 
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setTrigSensitivity(uint8_t sensitivity);
 
   /**
-   * @brief Set the Keep Sensitivity object
-   *        设置维持灵敏度，0~9
+   * @fn setKeepSensitivity
+   * @brief Set the Keep Sensitivity object，0~9
    * @param sensitivity 
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setKeepSensitivity(uint8_t sensitivity);
 
   /**
+   * @fn getTrigSensitivity
    * @brief Get the Trig Sensitivity object
-   *        获取触发灵敏度
    * @return uint8_t 
    */
   uint8_t getTrigSensitivity(void);
 
   /**
+   * @fn getKeepSensitivity
    * @brief Get the Keep Sensitivity object
-   *        获取维持灵敏度
    * @return uint8_t 
    */
   uint8_t getKeepSensitivity(void);
 
   /**
+   * @fn getStatus
    * @brief Get the Status object
-   * 
    * @return sSensorStatus_t 
-   *        workStatus
-   *          0 stop
-   *          1 start
-   *        workMode
-   *          0 为存在检测
-   *          1 为测速测距
-   *        initStatus
-   *          0 未初始化
-   *          1 初始化完成
+   * @n     workStatus
+   * @n       0 stop
+   * @n       1 start
+   * @n     workMode
+   * @n       0 indicates presence detection
+   * @n       1 is speed measurement and ranging
+   * @n     initStatus
+   * @n       0 not init
+   * @n       1 init success
    */
   sSensorStatus_t getStatus(void);
 
-
   /**
+   * @fn setIoPolaity
    * @brief Set the Io Polaity object
-   * 
    * @param value
-   *        0：有目标时输出低电平，无目标时输出高电平
-            1：有目标时输出高电平，无目标时输出低电平（默认状态）
-   * @return true 
-   * @return false 
+   * @n     0：Output low level when there is a target, output high level when there is no target
+   * @n     1: Output high level when there is a target, output low level when there is no target (default)
+   * @return true or false 
    */
   bool setIoPolaity(uint8_t value);
 
   /**
+   * @fn getIoPolaity
    * @brief Get the Io Polaity object
-   *
-   * @return uint8_t 配置的I/O 口检测到目标后，引脚输出的信号电平
+   * @return uint8_t The level of the signal output by the pin after the configured I/O port detects the target
    */
   uint8_t getIoPolaity(void);
 
-
   /**
+   * @fn setPwm
    * @brief Set the Pwm object
-   * 
-   * @param pwm1 
-   *        未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
-   * @param pwm2 
-   *        检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
-   * @param timer 
-   *        从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
-   *        如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
-   * @return true 
-   * @return false 
+   * @param pwm1 When no target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * @param pwm2 After the target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * @param timer timer The value ranges from 0 to 255, corresponding to timer x 64ms
+   * @n     For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
+   * @return true or false 
    */
   bool setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer);
 
 
   /**
+   * @fn getPwm
    * @brief Get the Pwm object
-   * 
    * @return sPwmData_t 
-   * @retval pwm1  未检测到目标时，OUT引脚输出信号的占空比，取值范围：0～100
-   * @retval pwm2  检测到目标后，OUT引脚输出信号的占空比，取值范围：0～100
-   * @retval timer  从pwm1 占空比渐变为pwm2 占空比的时间，取值范围：0～255，对应时间值 = timer*64ms
-   *         如timer=20，占空比从pwm1渐变为pwm2需要 20*64ms=1.28s。
+   * @retval pwm1  When no target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * @retval pwm2  After the target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * @retval timer The value ranges from 0 to 255, corresponding to timer x 64ms
+   * @n      For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
    */
-   
   sPwmData_t getPwm(void);
 
   /**
+   * @fn setSensorMode
    * @brief Set the Sensor Mode object
-   * 
    * @param mode 
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setSensorMode(eMode_t mode);
 
   /**
+   * @fn getTargetNumber
    * @brief Get the Target Number object
-   * 
    * @return uint8_t 
    */
   uint8_t getTargetNumber(void);
+
   /**
+   * @fn getTargetSpeed
    * @brief Get the Target Speed object
-   * 
-   * @return int16_t 
+   * @return float 
    */
   float getTargetSpeed(void);
 
   /**
+   * @fn getTargetRange
    * @brief Get the Target Range object
-   * 
-   * @return int16_t 
+   * @return float 
    */
   float getTargetRange(void);
 
   /**
+   * @fn getTargetEnergy
    * @brief Get the Target Energy object
-   * 
-   * @return int16_t 
+   * @return uint32_t 
    */
   uint32_t getTargetEnergy(void);
   
   /**
+   * @fn setDetectThres
    * @brief Set the Detect Thres object
-   * 
-   * @param min 
-   * @param max 
-   * @param thres 
-   * @return true 
-   * @return false 
-   */
+   * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
+   * @param Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * @param thres Target detection threshold, dimensionless unit 0.1, range 0~6553.5 (0~65535)
+   * @return true or false 
+   */ 
   bool setDetectThres(uint16_t min, uint16_t max, uint16_t thres);
 
   /**
-   * @brief 
-   * 
+   * @fn getTMinRange
+   * @brief get speed Min Range
    * @return uint16_t 
    */
   uint16_t getTMinRange(void);
+
   /**
-   * @brief 
-   * 
+   * @fn getTMaxRange
+   * @brief get speed Max Range
    * @return uint16_t 
    */
   uint16_t getTMaxRange(void);
+
   /**
+   * @fn getThresRange
    * @brief Get the Thres Range object
-   * 
    * @return uint16_t 
    */
   uint16_t getThresRange(void);
+
   /**
+   * @fn setFrettingDetection
    * @brief Set the Fretting Detection object
-   * 
    * @param sta 
    */
   void setFrettingDetection(eSwitch_t sta);
+
   /**
+   * @fn getFrettingDetection
    * @brief Get the Fretting Detection object
-   * 
    * @return eSwitch_t 
    */
   eSwitch_t getFrettingDetection(void);

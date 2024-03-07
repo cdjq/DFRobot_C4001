@@ -55,12 +55,13 @@ def setup():
   radar.set_detection_range(50, 1000)
   
   # set trigger sensitivity 0 - 9
-  radar.set_trig_sensitivity(0)
+  radar.set_trig_sensitivity(1)
   
   # set keep sensitivity 0 - 9
-  radar.set_keep_sensitivity(0)
+  radar.set_keep_sensitivity(1)
   
-  # Trigger delay, unit 10ms range (0 ~200) (0s-2.0s)
+  # Trigger delay, i2c mode unit 10ms range (0 ~200) (0s-2.0s)
+  # Trigger delay, uart mode unit 500ms range (0 ~200) (0s-100.0s)
   # Maintain detection timeout, unit 500ms, range (4~3000) (2s-1500s)
   radar.set_delay(24, 4)
   

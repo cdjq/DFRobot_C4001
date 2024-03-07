@@ -37,6 +37,7 @@
 void setup()
 {
   Serial.begin(115200);
+  while(!Serial);
   while(!radar.begin()){
     Serial.println("NO Deivces !");
     delay(1000);

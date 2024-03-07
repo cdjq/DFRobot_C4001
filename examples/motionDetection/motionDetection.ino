@@ -37,15 +37,15 @@
 void setup()
 {
   Serial.begin(115200);
+  while(!Serial);
   while(!radar.begin()){
     Serial.println("NO Deivces !");
     delay(1000);
   }
   Serial.println("Device connected!");
 
-  // exit Mode
+  // exist Mode
   radar.setSensorMode(eExitMode);
-
 
   sSensorStatus_t data;
   data = radar.getStatus();
@@ -79,7 +79,8 @@ void setup()
     Serial.println("set keep sensitivity successfully!");
   }
   /*
-   * trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
    * keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
    */
   if(radar.setDelay(/*trig*/24, /*keep*/4)){
@@ -97,6 +98,7 @@ void setup()
   }
 
   /*
+   * Serial module valid
    * Set pwm polarity
    * 0：Output low level when there is a target, output high level when there is no target
    * 1: Output high level when there is a target, output low level when there is no target (default)

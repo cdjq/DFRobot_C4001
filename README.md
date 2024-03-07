@@ -34,22 +34,20 @@ There are two methods for using this library:<br>
   /**
    * @fn motionDetection
    * @brief motion Detection
-   * @return true
-   * @return false
+   * @return true or false
    */
   bool motionDetection(void);
 
   /**
    * @fn setSensor
    * @brief Set the Sensor object
-   * 
    * @param mode
-   *   eStartSen        start collect
-   *   eStopSen         stop collect
-   *   eResetSen        reset sensor
-   *   eRecoverSen      recover params
-   *   eSaveParams      save config
-   *   eChangeMode      chagne mode
+   * @n  eStartSen        start collect
+   * @n  eStopSen         stop collect
+   * @n  eResetSen        reset sensor
+   * @n  eRecoverSen      recover params
+   * @n  eSaveParams      save config
+   * @n  eChangeMode      chagne mode
    */
   void setSensor(eSetMode_t mode);
   
@@ -57,9 +55,10 @@ There are two methods for using this library:<br>
    * @fn setDelay
    * @brief Set the Delay object
    * @param trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * @n     iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
+   * @n     uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
    * @param keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setDelay(uint8_t trig , uint16_t keep);
 
@@ -73,7 +72,6 @@ There are two methods for using this library:<br>
   /**
    * @fn getKeepTimerout
    * @brief get keep timer out
-   * 
    * @return  uint16_t 
    */
   uint16_t getKeepTimerout(void);
@@ -107,8 +105,7 @@ There are two methods for using this library:<br>
    * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
    * @param max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
    * @param trig The trigger distance (unit: cm) ranges from 2.4 to 20m (240 to 2000). The actual configuration range does not exceed the maximum and minimum detection distance.
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setDetectionRange(uint16_t min, uint16_t max);
 
@@ -116,8 +113,7 @@ There are two methods for using this library:<br>
    * @fn setTrigSensitivity
    * @brief Set trigger sensitivity, 0~9
    * @param sensitivity 
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setTrigSensitivity(uint8_t sensitivity);
 
@@ -125,8 +121,7 @@ There are two methods for using this library:<br>
    * @fn setKeepSensitivity
    * @brief Set the Keep Sensitivity object，0~9
    * @param sensitivity 
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setKeepSensitivity(uint8_t sensitivity);
 
@@ -147,17 +142,16 @@ There are two methods for using this library:<br>
   /**
    * @fn getStatus
    * @brief Get the Status object
-   * 
    * @return sSensorStatus_t 
-   *        workStatus
-   *          0 stop
-   *          1 start
-   *        workMode
-   *          0 indicates presence detection
-   *          1 is speed measurement and ranging
-   *        initStatus
-   *          0 not init
-   *          1 init success
+   * @n     workStatus
+   * @n       0 stop
+   * @n       1 start
+   * @n     workMode
+   * @n       0 indicates presence detection
+   * @n       1 is speed measurement and ranging
+   * @n     initStatus
+   * @n       0 not init
+   * @n       1 init success
    */
   sSensorStatus_t getStatus(void);
 
@@ -166,10 +160,9 @@ There are two methods for using this library:<br>
    * @fn setIoPolaity
    * @brief Set the Io Polaity object
    * @param value
-   *        0：Output low level when there is a target, output high level when there is no target
-   *        1: Output high level when there is a target, output low level when there is no target (default)
-   * @return true 
-   * @return false 
+   * @n     0：Output low level when there is a target, output high level when there is no target
+   * @n     1: Output high level when there is a target, output low level when there is no target (default)
+   * @return true or false 
    */
   bool setIoPolaity(uint8_t value);
 
@@ -180,22 +173,16 @@ There are two methods for using this library:<br>
    */
   uint8_t getIoPolaity(void);
 
-
   /**
    * @fn setPwm
    * @brief Set the Pwm object
-   * @param pwm1 
-   *        pwm1  When no target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
-   * @param pwm2 
-   *        After the target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
-   * @param timer 
-   *        timer The value ranges from 0 to 255, corresponding to timer x 64ms
-   *        For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
-   * @return true 
-   * @return false 
+   * @param pwm1 When no target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * @param pwm2 After the target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
+   * @param timer timer The value ranges from 0 to 255, corresponding to timer x 64ms
+   * @n     For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
+   * @return true or false 
    */
   bool setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer);
-
 
   /**
    * @fn getPwm
@@ -204,7 +191,7 @@ There are two methods for using this library:<br>
    * @retval pwm1  When no target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
    * @retval pwm2  After the target is detected, the duty cycle of the output signal of the OUT pin ranges from 0 to 100
    * @retval timer The value ranges from 0 to 255, corresponding to timer x 64ms
-   *         For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
+   * @n      For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
    */
   sPwmData_t getPwm(void);
 
@@ -212,8 +199,7 @@ There are two methods for using this library:<br>
    * @fn setSensorMode
    * @brief Set the Sensor Mode object
    * @param mode 
-   * @return true 
-   * @return false 
+   * @return true or false
    */
   bool setSensorMode(eMode_t mode);
 
@@ -227,16 +213,16 @@ There are two methods for using this library:<br>
   /**
    * @fn getTargetSpeed
    * @brief Get the Target Speed object
-   * @return int16_t 
+   * @return float 
    */
-  int16_t getTargetSpeed(void);
+  float getTargetSpeed(void);
 
   /**
    * @fn getTargetRange
    * @brief Get the Target Range object
-   * @return int16_t 
+   * @return float 
    */
-  int16_t getTargetRange(void);
+  float getTargetRange(void);
 
   /**
    * @fn getTargetEnergy
@@ -248,11 +234,10 @@ There are two methods for using this library:<br>
   /**
    * @fn setDetectThres
    * @brief Set the Detect Thres object
-   * @param min 
-   * @param max 
-   * @param thres 
-   * @return true 
-   * @return false 
+   * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
+   * @param Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * @param thres Target detection threshold, dimensionless unit 0.1, range 0~6553.5 (0~65535)
+   * @return true or false 
    */ 
   bool setDetectThres(uint16_t min, uint16_t max, uint16_t thres);
 

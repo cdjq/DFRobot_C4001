@@ -16,26 +16,21 @@ DFRobot_C4001::~DFRobot_C4001(){}
 sSensorStatus_t DFRobot_C4001::getStatus(void)
 {
   sSensorStatus_t data;
+  uint8_t temp[100] = {0};
+  uint8_t len = 0;
   if(uartI2CFlag == I2C_FLAG){
     uint8_t temp = 0;
     readReg(REG_STATUS, &temp, (uint8_t)1);
     data.workStatus = (temp&0x01);
     data.workMode   = (temp&0x02) >> 1;
     data.initStatus = (temp&0x80) >> 7;
-  }else{
-    uint8_t temp[100] = {0};
-    uint8_t len = 0;
+  }else{  
     sAllData_t allData;
     readReg(0, temp, 100);
     writeReg(0, (uint8_t *)START_SENSOR, strlen(START_SENSOR));
-    delay(1000);
-    readReg(0, temp, 100);
     while(len == 0){
       delay(1000);
       len = readReg(0, temp, 100);
-      // for(uint8_t i = 0; i < len; i++) {
-      //   Serial.print((char)temp[i]);
-      // }
       allData = anaysisData(temp ,len);
     }
     data.workStatus = allData.sta.workStatus;
@@ -61,9 +56,6 @@ bool DFRobot_C4001::motionDetection(void)
     uint8_t temp[100] = {0};
     sAllData_t data;
     len = readReg(0, temp, 100);
-    // for(uint8_t i = 0; i < len; i++) {
-    //   Serial.print((char)temp[i]);
-    // }
     data = anaysisData(temp ,len);
     if(data.exist){
       old = (bool)status;
@@ -119,6 +111,7 @@ void DFRobot_C4001::setSensor(eSetMode_t mode)
       writeReg(0, (uint8_t *)RECOVER_SENSOR, strlen(RECOVER_SENSOR));
       delay(800);  // must timer
       writeReg(0, (uint8_t *)START_SENSOR, strlen(START_SENSOR));
+      delay(500);
     }
   }
 }
@@ -144,8 +137,10 @@ bool DFRobot_C4001::setSensorMode(eMode_t mode)
     delay(100);
     if(mode == eExitMode){
       writeReg(0, (uint8_t *)EXIST_MODE, strlen(EXIST_MODE));
+      delay(50);  
     }else{
       writeReg(0, (uint8_t *)SPEED_MODE, strlen(SPEED_MODE));
+      delay(50);
     }
     delay(50);
     writeReg(0, (uint8_t *)SAVE_CONFIG, strlen(SAVE_CONFIG));
@@ -182,6 +177,8 @@ uint8_t DFRobot_C4001::getTrigSensitivity(void)
     return temp;
   }else{
     sResponseData_t responseData;
+    uint8_t temp[100] = {0};
+    readReg(0, temp, 100);
     String data = "getSensitivity";
     responseData = wRCMD(data, (uint8_t)1);
     if(responseData.status){ 
@@ -217,6 +214,8 @@ uint8_t DFRobot_C4001::getKeepSensitivity(void)
     return temp;
   }else{
     sResponseData_t responseData;
+    uint8_t temp[100] = {0};
+    readReg(0, temp, 100);
     String data = "getSensitivity";
     responseData = wRCMD(data, (uint8_t)1);
     if(responseData.status){
@@ -268,7 +267,6 @@ uint8_t DFRobot_C4001::getTrigDelay(void)
     return 0;
   }
 }
-
 
 uint16_t DFRobot_C4001::getKeepTimerout(void)
 {
@@ -379,7 +377,6 @@ uint8_t DFRobot_C4001::getTargetNumber(void)
   uint16_t bufferspeed[MAX_BUFFER]  = {0};
   uint16_t bufferenergy[MAX_BUFFER] = {0};
   if(uartI2CFlag == I2C_FLAG){
-
     readReg(REG_RESULT_OBJ_MUN, temp, (uint8_t)7);
     if(temp[0] == 1){
       flash_number = 0;
@@ -496,7 +493,6 @@ uint8_t DFRobot_C4001::getIoPolaity(void)
   }
 }
 
-
 bool DFRobot_C4001::setPwm(uint8_t pwm1 , uint8_t pwm2, uint8_t timer)
 {
   if(pwm1 > 100 || pwm2 > 100){
@@ -534,7 +530,6 @@ sPwmData_t DFRobot_C4001::getPwm(void)
     return pwmData;
   }
 }
-
 
 uint16_t DFRobot_C4001::getTMinRange(void)
 {
@@ -623,9 +618,6 @@ sResponseData_t DFRobot_C4001::anaysisResponse(uint8_t *data, uint8_t len ,uint8
   uint8_t space[5] = {0};
   uint8_t i = 0;
   uint8_t j = 0;
-  // for(uint8_t i = 0; i < len; i++){
-  //   Serial.print((char)data[i]);
-  // } Serial.println();
   for(i = 0; i < len; i++){
     if(data[i] == 'R' && data[i+1] == 'e' && data[i+2] == 's'){
       break;
@@ -661,14 +653,12 @@ sAllData_t DFRobot_C4001::anaysisData(uint8_t * data, uint8_t len)
   sAllData_t allData;
   uint8_t location = 0;
   memset(&allData, 0, sizeof(sAllData_t));
-
   for(uint8_t i = 0; i < len; i++){
     if(data[i] == '$'){
       location = i;
       break;
     }
   }
-  
   if(location == len){
     return allData;
   }
@@ -687,17 +677,15 @@ sAllData_t DFRobot_C4001::anaysisData(uint8_t * data, uint8_t len)
     allData.sta.workStatus = 1;
     allData.sta.initStatus = 1;
     char *token;
-    char *parts[10]; // 假设最多有10个部分
-    int index = 0; // 用于跟踪存储的部分数量
-
-    // 使用strtok函数按逗号分隔字符串
+    char *parts[10]; // Let's say there are at most 10 parts
+    int index = 0;   // Used to track the number of parts stored
     token = strtok((char*)(data+location), ",");
     while (token != NULL) {
-      parts[index] = token; // 将部分的指针存储在数组中
+      parts[index] = token; // Stores partial Pointers in an array
       if(index++ > 8){
         break;
       }
-      token = strtok(NULL, ","); // 继续提取下一个部分
+      token = strtok(NULL, ","); // Continue to extract the next section
     }
     allData.target.number = atoi(parts[1]);
     allData.target.range = atof(parts[3]) * 100;
@@ -708,18 +696,18 @@ sAllData_t DFRobot_C4001::anaysisData(uint8_t * data, uint8_t len)
   return allData;
 }
 
-
 sResponseData_t DFRobot_C4001::wRCMD(String cmd1, uint8_t count)
 {
   uint8_t len = 0;
-  uint8_t temp[100] = {0};
+  uint8_t temp[200] = {0};
   sResponseData_t responseData;
-  readReg(0, temp, 100);
-  delay(10);
+  readReg(0, temp, 200);
+  delay(100);
   writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
   delay(100);
   writeReg(0, (uint8_t *)cmd1.c_str(), cmd1.length());
-  len = readReg(0, temp, 100);
+  delay(50);
+  len = readReg(0, temp, 200);
   responseData = anaysisResponse(temp, len, count);
   writeReg(0, (uint8_t *)START_SENSOR, strlen(START_SENSOR));
   delay(100);
@@ -731,15 +719,13 @@ void DFRobot_C4001::writeCMD(String cmd1 , String cmd2, uint8_t count)
   writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
   delay(100);
   writeReg(0, (uint8_t *)cmd1.c_str(), cmd1.length());
-  delay(50);
+  delay(100);
   if(count > 1){
     writeReg(0, (uint8_t *)cmd2.c_str(), cmd2.length());
-    delay(50);
+    delay(100);
   }
-
   writeReg(0, (uint8_t *)SAVE_CONFIG, strlen(SAVE_CONFIG));
   delay(100);
-
   writeReg(0, (uint8_t *)START_SENSOR, strlen(START_SENSOR));
   delay(100);
 }
@@ -786,9 +772,6 @@ int16_t DFRobot_C4001_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
   return i;
 }
 
-
-
-
 #if defined(ARDUINO_AVR_UNO) || defined(ESP8266)
   DFRobot_C4001_UART::DFRobot_C4001_UART(SoftwareSerial *sSerial, uint32_t Baud)
   {
@@ -817,8 +800,6 @@ bool DFRobot_C4001_UART::begin()
   #else
     _serial->begin(this->_baud);  // M0 cannot create a begin in a construct
   #endif
-  
-
   return true;
 }
 
@@ -828,6 +809,7 @@ void DFRobot_C4001_UART::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
     _serial->write(data[i]);
   }
   len = reg;
+  delay(10);
 }
 
 int16_t DFRobot_C4001_UART::readReg(uint8_t reg, uint8_t *data, uint8_t len)
@@ -836,9 +818,9 @@ int16_t DFRobot_C4001_UART::readReg(uint8_t reg, uint8_t *data, uint8_t len)
   uint32_t nowtime = millis();
   while(millis() - nowtime < TIME_OUT){
     while(_serial->available() > 0){
+      if(i == len) return len;
       data[i++] = _serial->read();
     }
-    if(i >= len) return len;
   }
   len = reg;
   reg = len;

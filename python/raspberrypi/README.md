@@ -55,12 +55,6 @@ python3 motion_range_velocity.py
     @return status
   '''
 
-  def set_sensor(self, mode):
-  '''!
-    @brief set_sensor
-    @param mode
-  '''
-
   def motion_detection(self):
   '''!
     @brief motion_detection
@@ -103,8 +97,10 @@ python3 motion_range_velocity.py
 
   def set_delay(self, trig, keep):
   '''!
-    @brief set_sensor_mode
-    @param trig (0-200) (0s-2.0s)
+    @brief set_delay
+    @param trig (0-200)
+    @n     Trigger delay, i2c mode unit 10ms range (0 ~200) (0s-2.0s)
+    @n     Trigger delay, uart mode unit 500ms range (0 ~200) (0s-100.0s)
     @param keep (4~3000) (2s-1500s)
   '''
 

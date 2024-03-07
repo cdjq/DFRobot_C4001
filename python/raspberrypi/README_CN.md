@@ -46,109 +46,197 @@ python3 motion_range_velocity.py
 ## 方法
 
 ```python
-  '''!
-    @brief 初始化传感器
-  '''
   def begin(self):
+  '''!
+    @brief begin 
+  '''
 
+  def get_status(self):
   '''!
-    @brief 获取年月日等日期
-    @return struct_utc_tim 类型，表示返回的年月日
+    @brief get_status
+    @return status
   '''
-  def get_date(self):
 
+  def motion_detection(self):
   '''!
-    @brief 获取年月日等日期
-    @return struct_utc_tim 类型，表示返回的时分秒
+    @brief motion_detection
+    @n     检测物体是否运动
+    @return status
+    @retval 0 物体没有运动
+    @retval 1 物体运动
   '''
-  def get_utc(self):
 
+  def set_sensor_mode(self, mode):
   '''!
-    @brief 获取纬度
-    @return struct_lat_lon 类型，表示返回的纬度
+    @brief set_sensor_mode
+    @param mode 
+    @n  SPEED_MODE  速度模式
+    @n  EXIST_MODE  存在模式
   '''
-  def get_lat(self):
 
+  def set_trig_sensitivity(self, sensitivity):
   '''!
-    @brief 获取经度
-    @return struct_lat_lon 类型，表示返回的经度
+    @brief set_trig_sensitivity
+    @param sensitivity 0-9
   '''
-  def get_lon(self):
+    
+  def get_trig_sensitivity(self):
+  '''!
+    @brief get_trig_sensitivity
+    @return sensitivity 0-9
+  '''
 
+  def set_keep_sensitivity(self, sensitivity):
   '''!
-    @brief 获取使用的卫星数
-    @return 表示使用的卫星数
+    @brief set_keep_sensitivity
+    @param sensitivity 0-9
   '''
-  def get_num_sta_used(self):
 
+  def get_keep_sensitivity(self):
   '''!
-    @brief 获取大地的高度
-    @return double 类型，表示大地的高度
+    @brief get_keep_sensitivity
+    @return sensitivity 0-9
   '''
-  def get_alt(self):
 
+  def set_delay(self, trig, keep):
   '''!
-    @brief 获取对地真航向
-    @return 浮点型数据 （单位 度）
+    @brief set_delay
+    @param trig (0-200)
+    @n     触发延迟，i2c模式单位10ms范围(0 ~200)(0s-2.0)
+    @n     触发延迟，uart模式单位500ms范围(0 ~200)(0s-100.0s)
+    @param keep (4~3000) (2s-1500s)
   '''
-  def get_cog(self):
 
+  def get_trig_delay(self):
   '''!
-    @brief 获取对地速度
-    @return speed 浮点型数据 （单位 节）
+    @brief get_trig_delay
+    @return trig
   '''
-  def get_sog(self):
+    
+  def get_keep_timerout(self):
+  '''!
+    @brief get_keep_timerout
+    @return keep timerout
+  '''
 
+  def set_detection_range(self, min, max):
   '''!
-    @brief 获取使用的星系模式
-    @return mode
-    @retval 1 使用 gps
-    @retval 2 使用 beidou
-    @retval 3 使用 gps + beidou
-    @retval 4 使用 glonass
-    @retval 5 使用 gps + glonass
-    @retval 6 使用 beidou +glonass
-    @retval 7 使用 gps + beidou + glonass
+    @brief set_detection_range
+    @param min (30-2000)
+    @param max (240~2000)
+    @n min不大于max，否则函数不正常。
   '''
-  def get_mm wavewave_mode(self):
 
+  def get_trig_range(self):
   '''!
-    @brief 设置星系
-    @param mode
-    @n   GPS              使用 gps
-    @n   BeiDou           使用 beidou
-    @n   GPS_BeiDou       使用 gps + beidou
-    @n   GLONASS          使用 glonass
-    @n   GPS_GLONASS      使用 gps + glonass
-    @n   BeiDou_GLONASS   使用 beidou +glonass
-    @n   GPS_BeiDou_GLONASS 使用 gps + beidou + glonass
+    @brief get_trig_range
+    @return trig range
   '''
-  def set_mm wavewave(self, mode):
 
+  def get_max_range(self):
   '''!
-    @brief 获取mm wavewave的数据
+    @brief get_max_range
+    @return max range
   '''
-  def get_all_mm wavewave(self):
 
+  def get_min_range(self):
   '''!
-    @brief 使能mm wavewave 电源
+    @brief get_max_range
+    @return min range
   '''
-  def enable_power(self):
 
+  def get_target_number(self):
   '''!
-    @brief 失能mm wavewave 电源,此时mm wavewave不更新数据
+    @brief get_target_number
+    @return target number 
   '''
-  def disable_power(self):
-  
+
+  def get_target_speed(self):
   '''!
-    @brief 开启rgb
+    @brief get_target_speed
+    @return target speed
   '''
-  def rgb_on(self):
-  
+
+  def get_target_range(self):
   '''!
-    @brief 关闭rgb
+    @brief get_target_range
+    @return target range
   '''
-  def rgb_off(self):
+
+  def get_target_energy(self):
+  '''!
+    @brief get_target_energy
+    @return target energy
+  '''
+
+  def set_detect_thres(self, min, max, thres):
+  '''!
+    @brief set_detect_thres
+    @param min 0-2500
+    @param max 0-2500
+    @param thres 0-65535
+  '''
+
+  def set_io_polaity(self, value):
+  '''!
+    @brief set_io_polaity
+    @param value 0 or 1
+    @n 0:有目标时输出低，无目标时输出高
+    @n 1:有目标时输出高，无目标时输出低(默认状态)
+  '''
+
+  def get_io_polaity(self):
+  '''!
+    @brief get_io_polaity
+    @return io status
+  '''
+
+  def set_pwm(self, pwm1, pwm2, timer):
+  '''!
+    @brief set_pwm
+    @param pwm1  未检测到目标时OUT引脚输出信号的占空比。取值范围是0 ~ 100
+    @param pwm2  检测到目标后OUT引脚输出信号的占空比。取值范围是0 ~ 100
+    @param timer pwm1占空比到pwm2占空比的时间。取值范围为0 ~ 255，对应的时间值= timer*64ms
+    @n     例如timer=20，占空比从pwm1到pwm2需要20*64ms=1.28s。
+  '''
+
+  def get_pwm(self):
+  '''!
+    @brief get_pwm
+    @return pwm value
+  '''
+    
+  def get_tmin_range(self):
+  '''!
+    @brief get_tmin_range
+    @return speed mode min range
+  '''
+
+  def get_tmax_range(self):
+  '''!
+    @brief get_tmax_range
+    @return speed mode max range
+  '''
+
+  def get_thres_range(self):
+  '''!
+    @brief get_thres_range
+    @return speed mode thres range
+  '''
+    
+  def set_fretting_detection(self, status):
+  '''!
+    @brief set_fretting_detection
+    @param status
+    @n    FRETTING_ON  开启微动检测
+    @n    FRETTING_OFF 关闭微动检测
+  '''
+    
+  def get_fretting_detection(self):
+  '''!
+    @brief get_fretting_detection
+    @return status
+  '''
 ```
 
 ## 兼容性
