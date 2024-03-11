@@ -133,8 +133,7 @@ bool DFRobot_C4001::setSensorMode(eMode_t mode)
       }
     }
   }else{
-    writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
-    delay(100);
+    sensorStop();
     if(mode == eExitMode){
       writeReg(0, (uint8_t *)EXIST_MODE, strlen(EXIST_MODE));
       delay(50);  
@@ -243,7 +242,7 @@ bool DFRobot_C4001::setDelay(uint8_t trig , uint16_t keep)
     return true;
   }else{
     String data = "setLatency ";
-    data += String((float)trig*0.5, 1);
+    data += String((float)trig*0.01, 1);
     data += " ";
     data += String((float)keep*0.5, 1);
     writeCMD(data, data, (uint8_t)1);
@@ -262,7 +261,7 @@ uint8_t DFRobot_C4001::getTrigDelay(void)
     String data = "getLatency";
     responseData = wRCMD(data, (uint8_t)1);
     if(responseData.status){
-      return responseData.response1*2;
+      return responseData.response1*100;
     }
     return 0;
   }
@@ -285,7 +284,7 @@ uint16_t DFRobot_C4001::getKeepTimerout(void)
   }
 }
 
-bool DFRobot_C4001::setDetectionRange(uint16_t min, uint16_t max)
+bool DFRobot_C4001::setDetectionRange(uint16_t min, uint16_t max, uint16_t trig)
 {
   if(max < 240 || max > 2000){
     return false;
@@ -299,8 +298,8 @@ bool DFRobot_C4001::setDetectionRange(uint16_t min, uint16_t max)
     temp[1] = (uint8_t)(min >> 8);
     temp[2] = (uint8_t)(max);
     temp[3] = (uint8_t)(max >> 8);
-    temp[4] = (uint8_t)(max);
-    temp[5] = (uint8_t)(max >> 8);
+    temp[4] = (uint8_t)(trig);
+    temp[5] = (uint8_t)(trig >> 8);
     writeReg(REG_E_MIN_RANGE_L, temp, (uint8_t)6);
     setSensor(eSaveParams);
     return true;
@@ -310,7 +309,7 @@ bool DFRobot_C4001::setDetectionRange(uint16_t min, uint16_t max)
     data1 += String(((float)min)/100.0, 1);
     data1 += " ";
     data1 += String(((float)max)/100.0, 1);
-    data2 += String(((float)max)/100.0, 1);
+    data2 += String(((float)trig)/100.0, 1);
     writeCMD(data1, data2, (uint8_t)2);
     return true;
   }
@@ -370,19 +369,14 @@ uint16_t DFRobot_C4001::getMinRange(void)
 uint8_t DFRobot_C4001::getTargetNumber(void)
 {
   static uint8_t flash_number = 0;
-  uint8_t count = 0;
   uint8_t temp[10] = {0};
-  uint16_t bufferNumber[MAX_BUFFER] = {0};
-  uint16_t bufferRange[MAX_BUFFER]  = {0};
-  uint16_t bufferspeed[MAX_BUFFER]  = {0};
-  uint16_t bufferenergy[MAX_BUFFER] = {0};
   if(uartI2CFlag == I2C_FLAG){
     readReg(REG_RESULT_OBJ_MUN, temp, (uint8_t)7);
     if(temp[0] == 1){
       flash_number = 0;
       _buffer.number = 1;
-      _buffer.range  = (float)( int16_t((uint16_t)(temp[1] | ((uint16_t)temp[2]) << 8))) / 1000.0;
-      _buffer.speed  = (float)( int16_t((uint16_t)(temp[3] | ((uint16_t)temp[4]) << 8))) / 1000.0;
+      _buffer.range  = (float)( int16_t((uint16_t)(temp[1] | ((uint16_t)temp[2]) << 8))) / 100.0;
+      _buffer.speed  = (float)( int16_t((uint16_t)(temp[3] | ((uint16_t)temp[4]) << 8))) / 100.0;
       _buffer.energy = (uint16_t)(temp[5] | ((uint16_t)temp[6]) << 8);
     }else{
       if(flash_number++ > 10){
@@ -402,10 +396,11 @@ uint8_t DFRobot_C4001::getTargetNumber(void)
     if(data.target.number != 0){
       flash_number = 0;
       _buffer.number = data.target.number;
-      _buffer.range  = data.target.range/1000.0;
-      _buffer.speed  = data.target.speed/1000.0;
+      _buffer.range  = data.target.range/100.0;
+      _buffer.speed  = data.target.speed/100.0;
       _buffer.energy = data.target.energy;
     }else{
+      _buffer.number = 1;
       if(flash_number++ > 10){
         _buffer.number = 0;
         _buffer.range  = 0;
@@ -701,14 +696,12 @@ sResponseData_t DFRobot_C4001::wRCMD(String cmd1, uint8_t count)
   uint8_t len = 0;
   uint8_t temp[200] = {0};
   sResponseData_t responseData;
-  readReg(0, temp, 200);
-  delay(100);
-  writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
-  delay(100);
+  sensorStop();
   writeReg(0, (uint8_t *)cmd1.c_str(), cmd1.length());
-  delay(50);
+  delay(100);
   len = readReg(0, temp, 200);
   responseData = anaysisResponse(temp, len, count);
+  delay(100);
   writeReg(0, (uint8_t *)START_SENSOR, strlen(START_SENSOR));
   delay(100);
   return responseData;
@@ -716,11 +709,11 @@ sResponseData_t DFRobot_C4001::wRCMD(String cmd1, uint8_t count)
 
 void DFRobot_C4001::writeCMD(String cmd1 , String cmd2, uint8_t count)
 {
-  writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
-  delay(100);
+  sensorStop();
   writeReg(0, (uint8_t *)cmd1.c_str(), cmd1.length());
   delay(100);
   if(count > 1){
+    delay(100);
     writeReg(0, (uint8_t *)cmd2.c_str(), cmd2.length());
     delay(100);
   }
@@ -728,6 +721,27 @@ void DFRobot_C4001::writeCMD(String cmd1 , String cmd2, uint8_t count)
   delay(100);
   writeReg(0, (uint8_t *)START_SENSOR, strlen(START_SENSOR));
   delay(100);
+}
+
+bool DFRobot_C4001::sensorStop(void)
+{
+  uint8_t len = 0;
+  uint8_t temp[200] = {0};
+  writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
+  delay(1000);
+  len = readReg(0, temp, 200);
+  while(1){
+    if(len != 0){
+      if (strstr((const char *)temp, "sensorStop") != NULL) {
+        return true;
+      }
+    }
+    memset(temp, 0, 200);
+    delay(400);
+    writeReg(0, (uint8_t *)STOP_SENSOR, strlen(STOP_SENSOR));
+    len = readReg(0, temp, 200);
+    
+  }
 }
 
 DFRobot_C4001_I2C::DFRobot_C4001_I2C(TwoWire *pWire, uint8_t addr)
@@ -778,7 +792,7 @@ int16_t DFRobot_C4001_I2C::readReg(uint8_t reg, uint8_t *data, uint8_t len)
     this->_serial = sSerial;
     this->_baud = Baud;
     uartI2CFlag = UART_FLAG;
-    _serial->begin(this->_baud);
+    //_serial->begin(this->_baud);
   }
 #else
   DFRobot_C4001_UART::DFRobot_C4001_UART(HardwareSerial *hSerial, uint32_t Baud ,uint8_t txpin, uint8_t rxpin)
@@ -796,7 +810,8 @@ bool DFRobot_C4001_UART::begin()
   #ifdef ESP32
     _serial->begin(this->_baud, SERIAL_8N1, _txpin, _rxpin);
   #elif defined(ARDUINO_AVR_UNO) || defined(ESP8266)
-    // nothing use software
+    _serial->begin(this->_baud);
+    delay(1000);
   #else
     _serial->begin(this->_baud);  // M0 cannot create a begin in a construct
   #endif
@@ -805,11 +820,8 @@ bool DFRobot_C4001_UART::begin()
 
 void DFRobot_C4001_UART::writeReg(uint8_t reg, uint8_t *data, uint8_t len)
 {
-  for(uint8_t i = 0; i < len; i++){
-    _serial->write(data[i]);
-  }
+  _serial->write(data, len);
   len = reg;
-  delay(10);
 }
 
 int16_t DFRobot_C4001_UART::readReg(uint8_t reg, uint8_t *data, uint8_t len)

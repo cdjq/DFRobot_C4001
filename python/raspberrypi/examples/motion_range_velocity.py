@@ -22,7 +22,7 @@ from DFRobot_C4001 import *
   I2C_MODE
   UART_MODE
 '''
-ctype = I2C_MODE
+ctype = UART_MODE
 
 if ctype == I2C_MODE:
   I2C_1 = 0x01

@@ -14,6 +14,10 @@
 #define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
 
 #ifdef  I2C_COMMUNICATION
+  /*
+   * DEVICE_ADDR_0 = 0x2A     default iic_address
+   * DEVICE_ADDR_1 = 0x2B
+   */
   DFRobot_C4001_I2C radar(&Wire ,DEVICE_ADDR_0);
 #else
 /* ---------------------------------------------------------------------------------------------------------------------
@@ -99,5 +103,6 @@ void loop()
 
   Serial.print("target energy  = ");
   Serial.println(radar.getTargetEnergy());
+  Serial.println();
   delay(100);
 }

@@ -21,7 +21,11 @@
 
 #endif
 
-#define MAX_BUFFER 5
+/**
+ * @struct sSensorStatus_t
+ * @brief sensor status
+ * @note sensor status
+ */
 typedef struct{
   uint8_t workStatus;
   uint8_t workMode;
@@ -29,13 +33,21 @@ typedef struct{
 }sSensorStatus_t;
 
 
+/**
+ * @struct sPrivateData_t
+ * @brief speed mode data
+ */
 typedef struct{
-  uint8_t  number;
+  uint8_t number;
   float speed;
   float range;
   uint32_t energy;
 }sPrivateData_t;
 
+/**
+ * @struct sResponseData_t
+ * @brief response data
+ */
 typedef struct{
   bool status;
   float response1;
@@ -43,28 +55,49 @@ typedef struct{
   float response3;
 }sResponseData_t;
 
+
+/**
+ * @struct sPwmData_t
+ * @brief config pwm data param
+ */
 typedef struct{
   uint8_t pwm1;
   uint8_t pwm2;
   uint8_t timer;
 }sPwmData_t;
 
+/**
+ * @struct sAllData_t
+ * @brief sensor return data
+ */
 typedef struct{
   uint8_t exist;
   sSensorStatus_t sta;
   sPrivateData_t target;
 }sAllData_t;
 
+/**
+ * @enum eMode_t
+ * @brief sensor work mode
+ */
 typedef enum{
   eExitMode  = 0x00,
   eSpeedMode = 0x01,
 }eMode_t;
 
+/**
+ * @enum eSwitch_t
+ * @brief Micromotion detection switch
+ */
 typedef enum{
   eON  = 0x01,
   eOFF = 0x00,
 }eSwitch_t;
 
+/**
+ * @enum eSetMode_t
+ * @brief Set parameters for the sensor working status
+ */
 typedef enum{
   eStartSen   = 0x55,
   eStopSen    = 0x33,
@@ -78,9 +111,9 @@ class DFRobot_C4001{
 public:
 #define DEVICE_ADDR_0   0x2A
 #define DEVICE_ADDR_1   0x2B
-#define TIME_OUT        50     ///< time out
-#define I2C_FLAG        1
-#define UART_FLAG       2
+#define TIME_OUT        0x64     ///< time out
+#define I2C_FLAG        0x01
+#define UART_FLAG       0x02
 
 
 #define REG_STATUS              0x00
@@ -119,8 +152,8 @@ public:
   #define START_SENSOR    "sensorStart"
   #define STOP_SENSOR     "sensorStop"
   #define SAVE_CONFIG     "saveConfig"
-  #define RECOVER_SENSOR  "resetCfg"        ///> factory data reset
-  #define RESET_SENSOR    "resetSystem"     ///> RESET_SENSOR
+  #define RECOVER_SENSOR  "resetCfg"        ///< factory data reset
+  #define RESET_SENSOR    "resetSystem"     ///< RESET_SENSOR
   #define SPEED_MODE      "setRunApp 1"
   #define EXIST_MODE      "setRunApp 0"
 
@@ -152,8 +185,6 @@ public:
    * @fn setDelay
    * @brief Set the Delay object
    * @param trig Trigger delay, unit 0.01s, range 0~2s (0~200)
-   * @n     iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
-   * @n     uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
    * @param keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
    * @return true or false
    */
@@ -204,7 +235,7 @@ public:
    * @param trig The trigger distance (unit: cm) ranges from 2.4 to 20m (240 to 2000). The actual configuration range does not exceed the maximum and minimum detection distance.
    * @return true or false
    */
-  bool setDetectionRange(uint16_t min, uint16_t max);
+  bool setDetectionRange(uint16_t min, uint16_t max, uint16_t trig);
 
   /**
    * @fn setTrigSensitivity
@@ -332,7 +363,7 @@ public:
    * @fn setDetectThres
    * @brief Set the Detect Thres object
    * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
-   * @param Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * @param max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
    * @param thres Target detection threshold, dimensionless unit 0.1, range 0~6553.5 (0~65535)
    * @return true or false 
    */ 
@@ -372,11 +403,12 @@ public:
    * @return eSwitch_t 
    */
   eSwitch_t getFrettingDetection(void);
-
+protected:
   sResponseData_t wRCMD(String cmd1, uint8_t count);
   void writeCMD(String cmd1 , String cmd2, uint8_t count);
   sAllData_t anaysisData(uint8_t * data, uint8_t len);
   sResponseData_t anaysisResponse(uint8_t *data, uint8_t len ,uint8_t count);
+  bool sensorStop(void);
 private:
   uint8_t  _addr;
   uint8_t  _M_Flag = 0;

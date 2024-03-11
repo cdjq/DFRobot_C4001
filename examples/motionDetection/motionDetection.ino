@@ -1,6 +1,6 @@
  /*!
   * @file  motionDetection.ino
-  * @brief  radar Detect the presence of objects demo
+  * @brief  Example of radar detecting whether an object is moving
   * @copyright Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
   * @license The MIT License (MIT)
   * @author ZhixinLiu(zhixin.liu@dfrobot.com)
@@ -11,9 +11,13 @@
 
 #include "DFRobot_C4001.h"
 
-//#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
+#define I2C_COMMUNICATION  //use I2C for communication, but use the serial port for communication if the line of codes were masked
 
 #ifdef  I2C_COMMUNICATION
+  /*
+   * DEVICE_ADDR_0 = 0x2A     default iic_address
+   * DEVICE_ADDR_1 = 0x2B
+   */
   DFRobot_C4001_I2C radar(&Wire ,DEVICE_ADDR_0);
 #else
 /* ---------------------------------------------------------------------------------------------------------------------
@@ -65,8 +69,9 @@ void setup()
   /*
    * min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
    * max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * trig Detection range Maximum distance, unit cm, default trig = max
    */
-  if(radar.setDetectionRange(/*min*/50, /*max*/1000)){
+  if(radar.setDetectionRange(/*min*/30, /*max*/1000, /*trig*/1000)){
     Serial.println("set detection range successfully!");
   }
   // set trigger sensitivity 0 - 9
@@ -79,11 +84,10 @@ void setup()
     Serial.println("set keep sensitivity successfully!");
   }
   /*
-   * iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
-   * uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
+   * trig Trigger delay, unit 0.01s, range 0~2s (0~200)
    * keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
    */
-  if(radar.setDelay(/*trig*/24, /*keep*/4)){
+  if(radar.setDelay(/*trig*/100, /*keep*/4)){
     Serial.println("set delay successfully!");
   }
   
@@ -93,7 +97,7 @@ void setup()
    * timer The value ranges from 0 to 255, corresponding to timer x 64ms
    *        For example, timer=20, it takes 20*64ms=1.28s for the duty cycle to change from pwm1 to pwm2.
    */
-  if(radar.setPwm(/*pwm1*/10, /*pwm2*/10, /*timer*/10)){
+  if(radar.setPwm(/*pwm1*/50, /*pwm2*/0, /*timer*/10)){
     Serial.println("set pwm period successfully!");
   }
 
@@ -117,6 +121,8 @@ void setup()
   Serial.println(radar.getMinRange());
   Serial.print("max range = ");
   Serial.println(radar.getMaxRange());
+  Serial.print("trig range = ");
+  Serial.println(radar.getTrigRange());
 
   Serial.print("keep time = ");
   Serial.println(radar.getKeepTimerout());
@@ -141,7 +147,7 @@ void loop()
 {
   // Determine whether the object is moving
   if(radar.motionDetection()){
-    Serial.println("exit motion");
+    Serial.println("exist motion");
     Serial.println();
   }
   delay(100);

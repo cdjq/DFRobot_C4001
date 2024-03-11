@@ -31,7 +31,7 @@ Provides an Arduino library that has the following features:
 sudo git clone https://github.com/DFRobot/DFRobot_C4001
 ```
 
-1. Open and run the routine. To execute a routine demo_x.py, enter python demo_x.py in the command line. For example, to execute the routine get_mm wavewave.py, you need to enter:
+1. Open and run the routine. To execute a routine demo_x.py, enter python demo_x.py in the command line. For example, to execute the routine .py, you need to enter:
 
 ```
 python motion_range_velocity.py
@@ -98,9 +98,7 @@ python3 motion_range_velocity.py
   def set_delay(self, trig, keep):
   '''!
     @brief set_delay
-    @param trig (0-200)
-    @n     Trigger delay, i2c mode unit 10ms range (0 ~200) (0s-2.0s)
-    @n     Trigger delay, uart mode unit 500ms range (0 ~200) (0s-100.0s)
+    @param trig (0-200) unit 10ms range (0 ~200) (0s-2.0s)
     @param keep (4~3000) (2s-1500s)
   '''
 
@@ -193,7 +191,7 @@ python3 motion_range_velocity.py
     @brief set_pwm
     @param pwm1 Duty cycle of the output signal of the OUT pin when the target is not detected. The value ranges from 0 to 100
     @param pwm2 Duty cycle of the output signal of the OUT pin after the target is detected. The value ranges from 0 to 100
-    @param Time from pwm1 duty cycle to pwm2 duty cycle. The value ranges from 0 to 255, corresponding to the time value = timer*64ms
+    @param timer Time from pwm1 duty cycle to pwm2 duty cycle. The value ranges from 0 to 255, corresponding to the time value = timer*64ms
     @n     For example, timer=20, it takes 20*64ms=1.28s for duty cycle to change from pwm1 to pwm2.
   '''
 

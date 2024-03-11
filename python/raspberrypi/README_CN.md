@@ -4,7 +4,7 @@
 这是一款人体存在传感器，如PIR传感器、红外传感器和超声波传感器，具有动静都能检测的特点，并且其抗干扰能力相对较强，不易受到温度变化、环境光变化和环境噪声等因素的影响。不论人体是静坐、睡觉还是运动，传感器都能够快速、灵敏地检测到其存在。
 例如，在公共智能厕所项目中，由于公共厕所环境相对复杂，容易受到环境噪声和温湿度变化的影响。然而，该款毫米波人体存在传感器可以在这种复杂的环境下实时监测公共厕所蹲位的使用情况，优化公共厕所的布局和资源分配，提高使用效率和用户体验。
 
-![正反面svg效果图](../../resources/images/TEL0157.jpg)
+![正反面svg效果图](../../resources/images/mmWaveLadar.jpg)
 
 
 ## 产品链接(https://www.dfrobot.com.cn/goods-3115.html)
@@ -33,7 +33,7 @@
 sudo git clone https://github.com/DFRobot/DFRobot_C4001
 ```
 
-1. 打开并运行例程，要执行一个例程demo_x.py，请在命令行中输入python demo_x.py。例如，要执行 get_mm wavewave.py例程，你需要输入:
+1. 打开并运行例程，要执行一个例程demo_x.py，请在命令行中输入python demo_x.py。例如，要执行 motion_range_velocity.py例程，你需要输入:
 
 ```
 python  motion_range_velocity.py
@@ -101,9 +101,7 @@ python3 motion_range_velocity.py
   def set_delay(self, trig, keep):
   '''!
     @brief set_delay
-    @param trig (0-200)
-    @n     触发延迟，i2c模式单位10ms范围(0 ~200)(0s-2.0)
-    @n     触发延迟，uart模式单位500ms范围(0 ~200)(0s-100.0s)
+    @param trig (0-200) 单位10ms范围(0 ~200)(0s-2.0)
     @param keep (4~3000) (2s-1500s)
   '''
 

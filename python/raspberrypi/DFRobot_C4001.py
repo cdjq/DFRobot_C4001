@@ -291,9 +291,7 @@ class DFRobot_C4001(object):
   def set_delay(self, trig, keep):
     '''!
       @brief set_delay
-      @param trig (0-200)
-      @n     Trigger delay, i2c mode unit 10ms range (0 ~200) (0s-2.0s)
-      @n     Trigger delay, uart mode unit 500ms range (0 ~200) (0s-100.0s)
+      @param trig (0-200) unit 10ms range (0 ~200) (0s-2.0s)
       @param keep (4~3000) (2s-1500s)
     '''
     if trig > 200:
@@ -309,7 +307,7 @@ class DFRobot_C4001(object):
       self.set_sensor(I2C_SAVE_SENSOR)
     else:
       data = "setLatency "
-      data += str(trig*0.5)
+      data += str(trig*0.01)
       data += " "
       data += str(keep*0.5)
       self.write_cmd(data, data, 1)
@@ -326,7 +324,7 @@ class DFRobot_C4001(object):
     else:
       data = "getLatency"
       response = self.wr_cmd(data, 2)
-      return response.response1*2
+      return response.response1*100
     
   def get_keep_timerout(self):
     '''!
@@ -341,11 +339,12 @@ class DFRobot_C4001(object):
       response = self.wr_cmd(data, 2)
       return response.response2*2
 
-  def set_detection_range(self, min, max):
+  def set_detection_range(self, min, max, trig):
     '''!
       @brief set_detection_range
       @param min (30-2000)
       @param max (240~2000)
+      @param trig (240~2000)
       @n min not more than max, otherwise the function is not normal.
     '''
     if(max < 240 or max > 2000):
@@ -358,8 +357,8 @@ class DFRobot_C4001(object):
       send[1] = (min >> 8) & 0xFF
       send[2] = max & 0xFF
       send[3] = (max >> 8) & 0xFF
-      send[4] = max & 0xFF
-      send[5] = (max >> 8) & 0xFF
+      send[4] = trig & 0xFF
+      send[5] = (trig >> 8) & 0xFF
       self.write_reg(REG_E_MIN_RANGE_L, send)
       self.set_sensor(I2C_SAVE_SENSOR)
       return True
@@ -369,7 +368,7 @@ class DFRobot_C4001(object):
       data1 += str(min / 100.0)
       data1 += " "
       data1 += str(max / 100.0)
-      data2 += str(max / 100.0)
+      data2 += str(trig / 100.0)
       self.write_cmd(data1, data2, 2)
       return True
 
@@ -426,13 +425,13 @@ class DFRobot_C4001(object):
         self.__all_data.range  = (rslt[1] + rslt[2]*256) 
         self.__all_data.speed  = (rslt[3] + rslt[4]*256)
         if self.__all_data.range > 32768:
-          self.__all_data.range = (int(self.__all_data.range - 65535)) / 1000.0
+          self.__all_data.range = (int(self.__all_data.range - 65535)) / 100.0
         else:
-          self.__all_data.range /= 1000.0
+          self.__all_data.range /= 100.0
         if self.__all_data.speed > 32768:
-          self.__all_data.speed = (int(self.__all_data.speed - 65535)) / 1000.0
+          self.__all_data.speed = (int(self.__all_data.speed - 65535)) / 100.0
         else:
-          self.__all_data.speed /= 1000.0
+          self.__all_data.speed /= 100.0
             
         self.__all_data.energy = rslt[5] + rslt[6]*256
       else:
@@ -532,7 +531,7 @@ class DFRobot_C4001(object):
       @brief set_pwm
       @param pwm1 Duty cycle of the output signal of the OUT pin when the target is not detected. The value ranges from 0 to 100
       @param pwm2 Duty cycle of the output signal of the OUT pin after the target is detected. The value ranges from 0 to 100
-      @param Time from pwm1 duty cycle to pwm2 duty cycle. The value ranges from 0 to 255, corresponding to the time value = timer*64ms
+      @param timer Time from pwm1 duty cycle to pwm2 duty cycle. The value ranges from 0 to 255, corresponding to the time value = timer*64ms
       @n     For example, timer=20, it takes 20*64ms=1.28s for duty cycle to change from pwm1 to pwm2.
     '''
     if pwm1 > 100 or pwm2 > 100:
@@ -653,18 +652,17 @@ class DFRobot_C4001(object):
         self.__speed_null_count = 0
         self.__all_data.number = int(data_split[0])
         try:
-          self.__all_data.speed  = float(data_split[2])
+          self.__all_data.speed  = float(data_split[3])
         except:
           pass
         try:
-          self.__all_data.range  = float(data_split[3])
+          self.__all_data.range  = float(data_split[2])
         except:
           pass
         try:
           self.__all_data.energy = int(data_split[4])
         except:
           pass
-        
       else:
         if self.__speed_null_count < 10:
           self.__speed_null_count += 1
@@ -772,13 +770,16 @@ class DFRobot_C4001_UART(DFRobot_C4001):
   def write_reg(self, reg, data):
     test = bytes(data, encoding='ascii')
     self.ser.flushInput()
-    self.ser.write(test)
+    try:
+      self.ser.write(test)
+      return
+    except:
+      print("please check connect or mode!")
     return
 
   def read_reg(self, reg, len):
     recv = [0]*len
-    timenow = time.time()
-    
+    timenow = time.time()    
     while(time.time() - timenow) <= 1:
       count = self.ser.inWaiting()
       if count != 0:

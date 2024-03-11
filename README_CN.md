@@ -35,7 +35,7 @@
 ```C++
   /**
    * @fn motionDetection
-   * @brief motionDetection 运动检测
+   * @brief 运动检测
    * @return true
    * @return false
    */
@@ -43,7 +43,7 @@
 
   /**
    * @fn setSensor
-   * @brief Set the Sensor object
+   * @brief 设置传感器模式
    * @param mode
    * @n  eStartSen        开始采集
    * @n  eStopSen         停止采集
@@ -58,8 +58,6 @@
    * @fn setDelay
    * @brief 设置延时时间
    * @param trig 触发延时，单位0.01s，范围0~2s（0~200）
-   * @n     iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
-   * @n     uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
    * @param keep 维持检测超时，单位0.5s，范围2~1500秒（4~3000）
    * @return true 
    * @return false 
@@ -107,6 +105,8 @@
    * @param min 检测范围最小距离，单位cm，范围0.3~20m（30~2000），不超过MAX_RANGE，否则功能不正常。
    * @param max 检测范围最大距离，单位cm，范围2.4~20m（240~2000）
    * @param trig 触发距离，单位cm，范围2.4~20m（240~2000），实际生效的配置范围不超出检测距离的最大距离和最小距离。
+   * @n     触发距离就是能触发无人到有人的距离，
+   * @n     例如配置最远检测距离10米，触发距离的值是6米，无人后需要到6米内才显示有人，只处于6-10米间不会出发为有人
    * @return true or false
    */
   bool setDetectionRange(uint16_t min, uint16_t max);
@@ -199,7 +199,7 @@
   /**
    * @fn setSensorMode
    * @brief 设置sensor 模式
-   * @param mode 
+   * @param mode 存在模式或者运动模式
    * @return true or false 
    */
   bool setSensorMode(eMode_t mode);

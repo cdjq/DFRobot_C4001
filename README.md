@@ -32,6 +32,87 @@ There are two methods for using this library:<br>
 
 ```C++
   /**
+   * @struct sSensorStatus_t
+   * @brief sensor status
+   * @note sensor status
+   */sSensorStatus_t;
+
+
+  /**
+   * @struct sPrivateData_t
+   * @brief speed mode data
+   */
+  typedef struct{
+    uint8_t number;
+    float speed;
+    float range;
+    uint32_t energy;
+  }sPrivateData_t;
+
+  /**
+   * @struct sResponseData_t
+   * @brief response data
+   */
+  typedef struct{
+    bool status;
+    float response1;
+    float response2;
+    float response3;
+  }sResponseData_t;
+
+
+  /**
+   * @struct sPwmData_t
+   * @brief config pwm data param
+   */
+  typedef struct{
+    uint8_t pwm1;
+    uint8_t pwm2;
+    uint8_t timer;
+  }sPwmData_t;
+
+  /**
+   * @struct sAllData_t
+   * @brief sensor return data
+   */
+  typedef struct{
+    uint8_t exist;
+    sSensorStatus_t sta;
+    sPrivateData_t target;
+  }sAllData_t;
+
+  /**
+   * @enum eMode_t
+   * @brief sensor work mode
+   */
+  typedef enum{
+    eExitMode  = 0x00,
+    eSpeedMode = 0x01,
+  }eMode_t;
+
+  /**
+   * @enum eSwitch_t
+   * @brief Micromotion detection switch
+   */
+  typedef enum{
+    eON  = 0x01,
+    eOFF = 0x00,
+  }eSwitch_t;
+
+  /**
+   * @enum eSetMode_t
+   * @brief Set parameters for the sensor working status
+   */
+  typedef enum{
+    eStartSen   = 0x55,
+    eStopSen    = 0x33,
+    eResetSen   = 0xCC,
+    eRecoverSen = 0xAA,
+    eSaveParams = 0x5C,
+    eChangeMode = 0x3B,
+  }eSetMode_t;
+
+  /**
    * @fn motionDetection
    * @brief motion Detection
    * @return true or false
@@ -55,8 +136,6 @@ There are two methods for using this library:<br>
    * @fn setDelay
    * @brief Set the Delay object
    * @param trig Trigger delay, unit 0.01s, range 0~2s (0~200)
-   * @n     iic mode trig Trigger delay, unit 0.01s, range 0~2s (0~200)
-   * @n     uart mode trig Trigger delay, unit 0.5s, range 0~100s (0~200)
    * @param keep Maintain the detection timeout, unit 0.5s, range 2~1500 seconds (4~3000)
    * @return true or false
    */
@@ -105,6 +184,9 @@ There are two methods for using this library:<br>
    * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
    * @param max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
    * @param trig The trigger distance (unit: cm) ranges from 2.4 to 20m (240 to 2000). The actual configuration range does not exceed the maximum and minimum detection distance.
+   * @n          trigger distance is the distance that triggers no one to someone,
+   * @n          For example, if the maximum detection distance is 10 meters, the value of the trigger distance is 6 meters. 
+   * @n          If no one is present, it will be displayed within 6 meters. If it is only between 6-10 meters, it will not start for someone
    * @return true or false
    */
   bool setDetectionRange(uint16_t min, uint16_t max);
@@ -235,7 +317,7 @@ There are two methods for using this library:<br>
    * @fn setDetectThres
    * @brief Set the Detect Thres object
    * @param min Detection range Minimum distance, unit cm, range 0.3~20m (30~2000), not exceeding max, otherwise the function is abnormal.
-   * @param Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
+   * @param max Detection range Maximum distance, unit cm, range 2.4~20m (240~2000)
    * @param thres Target detection threshold, dimensionless unit 0.1, range 0~6553.5 (0~65535)
    * @return true or false 
    */ 

@@ -52,7 +52,8 @@ def setup():
   
   # min Detection range Minimum distance, unit cm, range (30~2000), not more than max, otherwise the function is not normal.
   # max Detection range Maximum distance, unit cm, range (240~2000)
-  radar.set_detection_range(50, 1000)
+  # trig Detection range Maximum distance, unit cm, range (240~2000)
+  radar.set_detection_range(30, 1000, 1000)
   
   # set trigger sensitivity 0 - 9
   radar.set_trig_sensitivity(1)
@@ -63,14 +64,14 @@ def setup():
   # Trigger delay, i2c mode unit 10ms range (0 ~200) (0s-2.0s)
   # Trigger delay, uart mode unit 500ms range (0 ~200) (0s-100.0s)
   # Maintain detection timeout, unit 500ms, range (4~3000) (2s-1500s)
-  radar.set_delay(24, 4)
+  radar.set_delay(100, 4)
   
   # pwm1 Duty cycle of the output signal of the OUT pin when the target is not detected. The value ranges from 0 to 100
   # pwm2 Duty cycle of the output signal of the OUT pin after the target is detected. The value ranges from 0 to 100
   # param timer
   #     Time from pwm1 duty cycle to pwm2 duty cycle. The value ranges from 0 to 255, corresponding to the time value = timer*64ms
   #     For example, timer=20, it takes 20*64ms=1.28s for duty cycle to change from pwm1 to pwm2.
-  radar.set_pwm(10, 10, 10)
+  radar.set_pwm(50, 0, 10)
   
   # Set pwm polarity
   # 0: Low output when there is a target, high output when there is no target
@@ -82,6 +83,7 @@ def setup():
   print("keep sensitivity = " + str(radar.get_keep_sensitivity()) )
   print("min range = " + str(radar.get_min_range()) )
   print("max range = " + str(radar.get_max_range()) )
+  print("trig range = " + str(radar.get_trig_range()) )
   print("keep time = " + str(radar.get_keep_timerout()) )
   print("trig delay = " + str(radar.get_trig_delay()) )
   print("polaity = " + str(radar.get_io_polaity()) )
