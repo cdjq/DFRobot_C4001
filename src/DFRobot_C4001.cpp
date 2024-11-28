@@ -751,9 +751,9 @@ DFRobot_C4001_I2C::DFRobot_C4001_I2C(TwoWire *pWire, uint8_t addr)
   uartI2CFlag = I2C_FLAG;
 }
 
-bool DFRobot_C4001_I2C::begin()
+bool DFRobot_C4001_I2C::begin(int sda /*=2*/, int scl/*=14*/)
 {
-  _pWire->begin();
+  _pWire->begin(sda, scl);
   _pWire->beginTransmission(_I2C_addr);
   if(_pWire->endTransmission() == 0){
     return true;
